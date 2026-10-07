@@ -34,10 +34,10 @@
 <body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
 
   <!-- HEADER BRANDING -->
-  <header class="bg-gradient-to-r from-cyan-500 to-teal-500 text-white pt-5 pb-16 px-3 sm:px-8 rounded-b-[2rem] shadow-lg relative">
-    <div class="max-w-7xl mx-auto flex justify-between items-center mb-5">
+  <header class="bg-gradient-to-r from-cyan-500 to-teal-500 text-white pt-5 pb-6 px-3 sm:px-8 rounded-b-[2rem] shadow-lg relative">
+    <div class="max-w-7xl mx-auto flex justify-between items-center mb-4">
       <div class="flex items-center gap-2.5">
-        <div class="p-2.5 bg-white/20 backdrop-blur-md rounded-2xl shadow-inner">
+        <div class="p-2 bg-white/20 backdrop-blur-md rounded-2xl shadow-inner">
           <i data-lucide="building-2" class="w-6 h-6 text-white"></i>
         </div>
         <div>
@@ -86,45 +86,66 @@
     </div>
   </header>
 
-  <!-- CONTENT SECTION -->
-  <main class="max-w-7xl mx-auto px-2.5 sm:px-8 -mt-8 space-y-4 sm:space-y-6 pb-12">
+  <!-- CONTENT SECTION (JARAK ATAS DISESUAIKAN AGAR TIDAK TERTUTUP) -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-8 mt-4 sm:mt-6 space-y-4 sm:space-y-6 pb-12">
 
     <!-- VIEW 1: DASHBOARD MAIN -->
     <div id="view-dashboard" class="space-y-4 sm:space-y-6">
+      
+      <!-- KPI CARDS RINGKASAN -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div>
-            <span class="text-[10px] font-bold uppercase text-emerald-600">PEMASUKAN BULAN INI</span>
-            <p id="kpiPemasukan" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rp 0</p>
+            <span class="text-[10px] font-bold uppercase text-emerald-600 tracking-wider">PEMASUKAN BULAN INI</span>
+            <p id="kpiPemasukan" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
           </div>
           <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl"><i data-lucide="trending-up" class="w-5 h-5"></i></div>
         </div>
         <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div>
-            <span class="text-[10px] font-bold uppercase text-rose-600">PENGELUARAN BULAN INI</span>
-            <p id="kpiPengeluaran" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 mt-0.5">Rp 0</p>
+            <span class="text-[10px] font-bold uppercase text-rose-600 tracking-wider">PENGELUARAN BULAN INI</span>
+            <p id="kpiPengeluaran" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
           </div>
           <div class="p-2.5 bg-rose-50 text-rose-600 rounded-xl"><i data-lucide="trending-down" class="w-5 h-5"></i></div>
         </div>
         <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div>
-            <span class="text-[10px] font-bold uppercase text-cyan-600">SALDO KAS BERJALAN</span>
-            <p id="kpiSaldoAkhir" class="text-xl sm:text-2xl font-bold text-cyan-600 mt-0.5">Rp 0</p>
+            <span class="text-[10px] font-bold uppercase text-cyan-600 tracking-wider">SALDO KAS BERJALAN</span>
+            <p id="kpiSaldoAkhir" class="text-xl sm:text-2xl font-bold text-cyan-600 mt-1">Rp 0</p>
           </div>
           <div class="p-2.5 bg-cyan-50 text-cyan-600 rounded-xl"><i data-lucide="wallet" class="w-5 h-5"></i></div>
         </div>
       </div>
 
+      <!-- CHART SECTION (PEMASUKAN & PENGELUARAN BULAT terpisah) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        
+        <!-- CHART PEMASUKAN PER KATEGORI -->
         <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <h3 class="text-xs sm:text-base font-bold mb-3">PEMASUKAN PER KATEGORI</h3>
-          <div class="relative h-56 sm:h-64"><canvas id="categoryChart"></canvas></div>
+          <h3 class="text-xs sm:text-base font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-500"></i> PEMASUKAN PER KATEGORI
+          </h3>
+          <div class="relative h-60 sm:h-64"><canvas id="pemasukanChart"></canvas></div>
         </div>
+
+        <!-- CHART PENGELUARAN PER KATEGORI -->
         <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <h3 class="text-xs sm:text-base font-bold mb-3">TREN ARUS KAS BULANAN (2026)</h3>
-          <div class="relative h-56 sm:h-64"><canvas id="monthlyChart"></canvas></div>
+          <h3 class="text-xs sm:text-base font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-rose-500"></i> PENGELUARAN PER KATEGORI
+          </h3>
+          <div class="relative h-60 sm:h-64"><canvas id="pengeluaranChart"></canvas></div>
         </div>
+
       </div>
+
+      <!-- CHART BAR TREN KAS BULANAN -->
+      <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+        <h3 class="text-xs sm:text-base font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center gap-2">
+          <i data-lucide="bar-chart-2" class="w-4 h-4 text-cyan-500"></i> TREN ARUS KAS BULANAN (2026)
+        </h3>
+        <div class="relative h-60 sm:h-64"><canvas id="monthlyChart"></canvas></div>
+      </div>
+
     </div>
 
     <!-- VIEW 2: TRANSAKSI TABLE -->
@@ -147,7 +168,7 @@
       </div>
     </div>
 
-    <!-- VIEW 3: TAB LAPORAN KHUSUS RESPONSIF PONSEL (ANGKA UTUH TAMPIL SEMUA) -->
+    <!-- VIEW 3: TAB LAPORAN KHUSUS RESPONSIF PONSEL -->
     <div id="view-laporan" class="hidden space-y-4 sm:space-y-6">
       <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center gap-2">
         <div>
@@ -339,7 +360,7 @@
         </tr>
       `).join('');
 
-      // Render Tab Laporan Akun Responsif Ponsel
+      // Render Tab Laporan Akun
       renderReportCategoryTables(txs, currentRekap.saldo_akhir);
 
       // Render Rekening Ustadz
@@ -381,7 +402,7 @@
         }
       });
 
-      // Render Table Pemasukan (Responsif Ponsel)
+      // Render Table Pemasukan
       document.getElementById('pemasukanAccountBody').innerHTML = Object.keys(pemMap).length > 0 ? 
         Object.keys(pemMap).map((akun, idx) => {
           const pct = totalPemSum > 0 ? ((pemMap[akun].sum / totalPemSum) * 100).toFixed(1) : 0;
@@ -420,7 +441,7 @@
       document.getElementById('totalCountPemasukan').innerText = `${totalPemCount}x`;
       document.getElementById('totalSumPemasukan').innerText = formatRp(totalPemSum);
 
-      // Render Table Pengeluaran (Responsif Ponsel - Angka Utuh)
+      // Render Table Pengeluaran
       document.getElementById('pengeluaranAccountBody').innerHTML = Object.keys(pengMap).length > 0 ? 
         Object.keys(pengMap).map((akun, idx) => {
           const pct = totalPengSum > 0 ? ((pengMap[akun].sum / totalPengSum) * 100).toFixed(1) : 0;
@@ -456,63 +477,4 @@
           `;
         }).join('') : `<tr><td colSpan="4" class="p-3 text-center text-slate-400">Tidak ada pengeluaran pada periode ini.</td></tr>`;
 
-      document.getElementById('totalCountPengeluaran').innerText = `${totalPengCount}x`;
-      document.getElementById('totalSumPengeluaran').innerText = formatRp(totalPengSum);
-
-      // Kalkulasi Net Surplus / Defisit Operasional
-      const netAmount = totalPemSum - totalPengSum;
-      const netElement = document.getElementById('netSurplusDeficit');
-      
-      if (netAmount >= 0) {
-        netElement.innerText = formatRp(netAmount);
-        netElement.className = "px-1.5 py-2.5 text-right font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap";
-      } else {
-        netElement.innerText = formatRp(netAmount);
-        netElement.className = "px-1.5 py-2.5 text-right font-bold text-rose-600 dark:text-rose-400 whitespace-nowrap";
-      }
-
-      // Display Akumulasi Sisa Saldo Kas Akhir
-      document.getElementById('totalEndingBalance').innerText = formatRp(endingBalance);
-
-      lucide.createIcons();
-    }
-
-    let catChart, monChart;
-    function renderCharts(rekap, currentTx) {
-      const categories = {};
-      Object.values(currentTx).forEach(t => {
-        if (t.debit > 0) categories[t.akun] = (categories[t.akun] || 0) + t.debit;
-      });
-
-      const catCtx = document.getElementById('categoryChart').getContext('2d');
-      if (catChart) catChart.destroy();
-      catChart = new Chart(catCtx, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(categories),
-          datasets: [{ data: Object.values(categories), backgroundColor: ['#06b6d4', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'] }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-
-      const months = Object.keys(rekap);
-      const debitData = months.map(m => rekap[m].total_debit);
-      const kreditData = months.map(m => rekap[m].total_kredit);
-
-      const monCtx = document.getElementById('monthlyChart').getContext('2d');
-      if (monChart) monChart.destroy();
-      monChart = new Chart(monCtx, {
-        type: 'bar',
-        data: {
-          labels: months,
-          datasets: [
-            { label: 'Pemasukan', data: debitData, backgroundColor: '#10b981' },
-            { label: 'Pengeluaran', data: kreditData, backgroundColor: '#f43f5e' }
-          ]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-    }
-  </script>
-</body>
-</html>
+      document.getElementById('totalCountPengeluaran').innerText = `${
