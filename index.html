@@ -477,4 +477,87 @@
           `;
         }).join('') : `<tr><td colSpan="4" class="p-3 text-center text-slate-400">Tidak ada pengeluaran pada periode ini.</td></tr>`;
 
-      document.getElementById('totalCountPengeluaran').innerText = `${
+      document.getElementById('totalCountPengeluaran').innerText = `${totalPengCount}x`;
+      document.getElementById('totalSumPengeluaran').innerText = formatRp(totalPengSum);
+
+      // Net Surplus/Defisit
+      const netAmount = totalPemSum - totalPengSum;
+      const netElement = document.getElementById('netSurplusDeficit');
+      
+      if (netAmount >= 0) {
+        netElement.innerText = formatRp(netAmount);
+        netElement.className = "px-1.5 py-2.5 text-right font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap";
+      } else {
+        netElement.innerText = formatRp(netAmount);
+        netElement.className = "px-1.5 py-2.5 text-right font-bold text-rose-600 dark:text-rose-400 whitespace-nowrap";
+      }
+
+      document.getElementById('totalEndingBalance').innerText = formatRp(endingBalance);
+
+      lucide.createIcons();
+    }
+
+    let pemChart, pengChart, monChart;
+    function renderCharts(rekap, currentTx) {
+      // 1. Data Chart Pemasukan per Kategori
+      const pemCategories = {};
+      // 2. Data Chart Pengeluaran per Kategori
+      const pengCategories = {};
+
+      Object.values(currentTx).forEach(t => {
+        if (t.debit > 0) pemCategories[t.akun] = (pemCategories[t.akun] || 0) + t.debit;
+        if (t.kredit > 0) pengCategories[t.akun] = (pengCategories[t.akun] || 0) + t.kredit;
+      });
+
+      // Render Chart Pemasukan (Lingkaran Hijau/Teal)
+      const pemCtx = document.getElementById('pemasukanChart').getContext('2d');
+      if (pemChart) pemChart.destroy();
+      pemChart = new Chart(pemCtx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(pemCategories).length > 0 ? Object.keys(pemCategories) : ['Tidak ada data'],
+          datasets: [{ 
+            data: Object.values(pemCategories).length > 0 ? Object.values(pemCategories) : [1], 
+            backgroundColor: Object.keys(pemCategories).length > 0 ? ['#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#34d399'] : ['#e2e8f0']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      // Render Chart Pengeluaran (Lingkaran Merah/Rose/Oranye)
+      const pengCtx = document.getElementById('pengeluaranChart').getContext('2d');
+      if (pengChart) pengChart.destroy();
+      pengChart = new Chart(pengCtx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(pengCategories).length > 0 ? Object.keys(pengCategories) : ['Tidak ada data'],
+          datasets: [{ 
+            data: Object.values(pengCategories).length > 0 ? Object.values(pengCategories) : [1], 
+            backgroundColor: Object.keys(pengCategories).length > 0 ? ['#f43f5e', '#fb923c', '#f59e0b', '#ec4899', '#e11d48'] : ['#e2e8f0']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      // Render Chart Bar Tren Bulanan
+      const months = Object.keys(rekap);
+      const debitData = months.map(m => rekap[m].total_debit);
+      const kreditData = months.map(m => rekap[m].total_kredit);
+
+      const monCtx = document.getElementById('monthlyChart').getContext('2d');
+      if (monChart) monChart.destroy();
+      monChart = new Chart(monCtx, {
+        type: 'bar',
+        data: {
+          labels: months,
+          datasets: [
+            { label: 'Pemasukan', data: debitData, backgroundColor: '#10b981' },
+            { label: 'Pengeluaran', data: kreditData, backgroundColor: '#f43f5e' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+  </script>
+</body>
+</html>
