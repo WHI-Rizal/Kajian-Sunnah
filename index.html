@@ -34,7 +34,7 @@
 <body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
 
   <!-- HEADER BRANDING -->
-  <header class="bg-gradient-to-r from-cyan-500 to-teal-500 text-white pt-6 pb-16 px-4 sm:px-8 rounded-b-[2rem] shadow-lg relative">
+  <header class="bg-gradient-to-r from-cyan-500 to-teal-500 text-white pt-6 pb-24 px-4 sm:px-8 rounded-b-[2rem] shadow-lg relative">
     <div class="max-w-7xl mx-auto flex justify-between items-center mb-6">
       <div class="flex items-center gap-3">
         <div class="p-3 bg-white/20 backdrop-blur-md rounded-2xl shadow-inner">
@@ -86,8 +86,8 @@
     </div>
   </header>
 
-  <!-- CONTENT SECTION (PENYESUAIAN MARGIN AGAR TULISAN PEMASUKAN TIDAK TERTUTUP) -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-8 -mt-6 sm:-mt-8 space-y-6 pb-12">
+  <!-- CONTENT SECTION (JARAK TOP PAS UNTUK MEMASTIKAN TULISAN PEMASUKAN TAMPIL UTUH) -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-8 -mt-12 sm:-mt-14 space-y-6 pb-12 relative z-10">
 
     <!-- VIEW 1: DASHBOARD MAIN -->
     <div id="view-dashboard" class="space-y-6">
@@ -121,30 +121,23 @@
 
       </div>
 
-      <!-- GRAFIK UTAMA: TREN ARUS KAS (PEMASUKAN VS PENGELUARAN BULANAN) -->
+      <!-- CHART 1 (ATAS): CHART BULAT DIPALING ATAS (MEMBANDINGKAN PEMASUKAN VS PENGELUARAN) -->
       <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
         <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
-          <i data-lucide="bar-chart-2" class="w-5 h-5 text-teal-500"></i> PERBANDINGAN PEMASUKAN VS PENGELUARAN BULANAN (2026)
+          <i data-lucide="pie-chart" class="w-5 h-5 text-cyan-500"></i> PERBANDINGAN PEMASUKAN VS PENGELUARAN BULAN INI
         </h3>
-        <div class="relative h-72">
-          <canvas id="monthlyChart"></canvas>
+        <div class="relative h-64 sm:h-72">
+          <canvas id="categoryChart"></canvas>
         </div>
       </div>
 
-      <!-- GRAFIK KATEGORI: PEMASUKAN & PENGELUARAN PER KATEGORI -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <h3 class="text-base font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
-            <i data-lucide="pie-chart" class="w-5 h-5"></i> PEMASUKAN PER KATEGORI
-          </h3>
-          <div class="relative h-64"><canvas id="categoryChart"></canvas></div>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <h3 class="text-base font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
-            <i data-lucide="pie-chart" class="w-5 h-5"></i> PENGELUARAN PER KATEGORI
-          </h3>
-          <div class="relative h-64"><canvas id="expenseCategoryChart"></canvas></div>
+      <!-- CHART 2 (BAWAH): CHART TABUNG / TREN ARUS KAS BULANAN -->
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
+          <i data-lucide="bar-chart-2" class="w-5 h-5 text-emerald-500"></i> TREN ARUS KAS BULANAN (2026)
+        </h3>
+        <div class="relative h-64 sm:h-72">
+          <canvas id="monthlyChart"></canvas>
         </div>
       </div>
 
@@ -378,7 +371,7 @@
         </div>
       `).join('');
 
-      renderCharts(rekap, globalData.transaksi?.[selectedMonth] || {});
+      renderCharts(rekap, currentRekap);
     }
 
     function renderReportCategoryTables(txs, endingBalance) {
@@ -499,43 +492,36 @@
       lucide.createIcons();
     }
 
-    let catChart, expChart, monChart;
-    function renderCharts(rekap, currentTx) {
-      // 1. Pemasukan per Kategori
-      const pemCategories = {};
-      // 2. Pengeluaran per Kategori
-      const expCategories = {};
-
-      Object.values(currentTx).forEach(t => {
-        if (t.debit > 0) pemCategories[t.akun] = (pemCategories[t.akun] || 0) + t.debit;
-        if (t.kredit > 0) expCategories[t.akun] = (expCategories[t.akun] || 0) + t.kredit;
-      });
-
-      // Chart Doughnut Pemasukan
+    let catChart, monChart;
+    function renderCharts(rekap, currentRekap) {
+      // 1. CHART BULAT (DOUGHNUT) TUNGGAL DI ATAS: MEMBANDINGKAN PEMASUKAN VS PENGELUARAN BULAN INI
       const catCtx = document.getElementById('categoryChart').getContext('2d');
       if (catChart) catChart.destroy();
+      
+      const totalDebit = currentRekap.total_debit || 0;
+      const totalKredit = currentRekap.total_kredit || 0;
+
       catChart = new Chart(catCtx, {
         type: 'doughnut',
         data: {
-          labels: Object.keys(pemCategories).length > 0 ? Object.keys(pemCategories) : ['Belum ada data'],
-          datasets: [{ data: Object.keys(pemCategories).length > 0 ? Object.values(pemCategories) : [1], backgroundColor: ['#06b6d4', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'] }]
+          labels: ['Total Pemasukan', 'Total Pengeluaran'],
+          datasets: [{ 
+            data: [totalDebit, totalKredit], 
+            backgroundColor: ['#10b981', '#f43f5e'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
       });
 
-      // Chart Doughnut Pengeluaran
-      const expCtx = document.getElementById('expenseCategoryChart').getContext('2d');
-      if (expChart) expChart.destroy();
-      expChart = new Chart(expCtx, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(expCategories).length > 0 ? Object.keys(expCategories) : ['Belum ada pengeluaran'],
-          datasets: [{ data: Object.keys(expCategories).length > 0 ? Object.values(expCategories) : [1], backgroundColor: ['#f43f5e', '#fb923c', '#eab308', '#ec4899', '#a855f7'] }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-
-      // Chart Bar Tren Bulanan (Pemasukan vs Pengeluaran)
+      // 2. CHART TABUNG (BAR) DI BAWAH: TREN ARUS KAS BULANAN (2026)
       const months = Object.keys(rekap);
       const debitData = months.map(m => rekap[m].total_debit);
       const kreditData = months.map(m => rekap[m].total_kredit);
@@ -555,7 +541,7 @@
           responsive: true, 
           maintainAspectRatio: false,
           plugins: {
-            legend: { position: 'top' }
+            legend: { position: 'bottom' }
           }
         }
       });
