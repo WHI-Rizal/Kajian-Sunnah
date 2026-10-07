@@ -86,7 +86,7 @@
     </div>
   </header>
 
-  <!-- CONTENT SECTION (JARAK TOP PAS UNTUK MEMASTIKAN TULISAN PEMASUKAN TAMPIL UTUH) -->
+  <!-- CONTENT SECTION -->
   <main class="max-w-7xl mx-auto px-4 sm:px-8 -mt-12 sm:-mt-14 space-y-6 pb-12 relative z-10">
 
     <!-- VIEW 1: DASHBOARD MAIN -->
@@ -121,7 +121,7 @@
 
       </div>
 
-      <!-- CHART 1 (ATAS): CHART BULAT DIPALING ATAS (MEMBANDINGKAN PEMASUKAN VS PENGELUARAN) -->
+      <!-- CHART 1: CHART BULAT ATAS -->
       <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
         <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
           <i data-lucide="pie-chart" class="w-5 h-5 text-cyan-500"></i> PERBANDINGAN PEMASUKAN VS PENGELUARAN BULAN INI
@@ -131,7 +131,7 @@
         </div>
       </div>
 
-      <!-- CHART 2 (BAWAH): CHART TABUNG / TREN ARUS KAS BULANAN -->
+      <!-- CHART 2: CHART TABUNG BAWAH -->
       <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
         <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
           <i data-lucide="bar-chart-2" class="w-5 h-5 text-emerald-500"></i> TREN ARUS KAS BULANAN (2026)
@@ -163,7 +163,7 @@
       </div>
     </div>
 
-    <!-- VIEW 3: TAB LAPORAN AKUN -->
+    <!-- VIEW 3: TAB LAPORAN AKUN (TANPA KOLOM PCT) -->
     <div id="view-laporan" class="hidden space-y-6">
       <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
         <div>
@@ -182,21 +182,19 @@
         </h4>
         <div class="w-full">
           <table class="w-full text-left text-sm">
-            <thead class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 uppercase text-[10px] sm:text-xs font-semibold">
+            <thead class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 uppercase text-xs font-semibold">
               <tr>
-                <th class="py-2.5 px-2 sm:px-3">KATEGORI AKUN</th>
-                <th class="py-2.5 px-1 sm:px-3 text-center">JML</th>
-                <th class="py-2.5 px-2 sm:px-3 text-right">TOTAL NOMINAL</th>
-                <th class="py-2.5 px-1 sm:px-3 text-right">PCT</th>
+                <th class="py-2.5 px-3">KATEGORI AKUN</th>
+                <th class="py-2.5 px-3 text-center">JML</th>
+                <th class="py-2.5 px-3 text-right">TOTAL NOMINAL</th>
               </tr>
             </thead>
             <tbody id="pemasukanAccountBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
             <tfoot class="bg-slate-50 dark:bg-slate-700/50 font-bold text-slate-800 dark:text-slate-100 text-xs sm:text-sm">
               <tr>
-                <td class="py-2.5 px-2 sm:px-3">TOTAL PEMASUKAN</td>
-                <td id="totalCountPemasukan" class="py-2.5 px-1 sm:px-3 text-center">0</td>
-                <td id="totalSumPemasukan" class="py-2.5 px-2 sm:px-3 text-right text-emerald-600">Rp 0</td>
-                <td class="py-2.5 px-1 sm:px-3 text-right">100%</td>
+                <td class="py-2.5 px-3">TOTAL PEMASUKAN</td>
+                <td id="totalCountPemasukan" class="py-2.5 px-3 text-center">0</td>
+                <td id="totalSumPemasukan" class="py-2.5 px-3 text-right text-emerald-600">Rp 0</td>
               </tr>
             </tfoot>
           </table>
@@ -214,21 +212,19 @@
 
         <div class="w-full">
           <table class="w-full text-left text-sm">
-            <thead class="bg-rose-50 dark:bg-rose-950/30 text-rose-800 dark:text-rose-300 uppercase text-[10px] sm:text-xs font-semibold">
+            <thead class="bg-rose-50 dark:bg-rose-950/30 text-rose-800 dark:text-rose-300 uppercase text-xs font-semibold">
               <tr>
-                <th class="py-2.5 px-2 sm:px-3">KATEGORI AKUN</th>
-                <th class="py-2.5 px-1 sm:px-3 text-center">JML</th>
-                <th class="py-2.5 px-2 sm:px-3 text-right">TOTAL NOMINAL</th>
-                <th class="py-2.5 px-1 sm:px-3 text-right">PCT</th>
+                <th class="py-2.5 px-3">KATEGORI AKUN</th>
+                <th class="py-2.5 px-3 text-center">JML</th>
+                <th class="py-2.5 px-3 text-right">TOTAL NOMINAL</th>
               </tr>
             </thead>
             <tbody id="pengeluaranAccountBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
             <tfoot class="font-bold border-t border-slate-200 dark:border-slate-700 text-xs sm:text-sm">
               <tr class="bg-slate-50 dark:bg-slate-700/50 text-slate-800 dark:text-slate-100">
-                <td class="py-2.5 px-2 sm:px-3">TOTAL PENGELUARAN</td>
-                <td id="totalCountPengeluaran" class="py-2.5 px-1 sm:px-3 text-center">0</td>
-                <td id="totalSumPengeluaran" class="py-2.5 px-2 sm:px-3 text-right text-rose-600">Rp 0</td>
-                <td class="py-2.5 px-1 sm:px-3 text-right">100%</td>
+                <td class="py-2.5 px-3">TOTAL PENGELUARAN</td>
+                <td id="totalCountPengeluaran" class="py-2.5 px-3 text-center">0</td>
+                <td id="totalSumPengeluaran" class="py-2.5 px-3 text-right text-rose-600">Rp 0</td>
               </tr>
             </tfoot>
           </table>
@@ -400,76 +396,72 @@
         }
       });
 
-      // Render Table Pemasukan
+      // Render Table Pemasukan (Tanpa Kolom PCT)
       document.getElementById('pemasukanAccountBody').innerHTML = Object.keys(pemMap).length > 0 ? 
         Object.keys(pemMap).map((akun, idx) => {
-          const pct = totalPemSum > 0 ? ((pemMap[akun].sum / totalPemSum) * 100).toFixed(1) : 0;
           const rowId = `pem-detail-${idx}`;
           
           const itemsHtml = pemMap[akun].items.map(item => `
             <tr class="bg-emerald-50/40 dark:bg-emerald-950/20 text-xs">
               <td class="pl-6 py-2 font-medium text-slate-600 dark:text-slate-300">${item.tanggal}</td>
-              <td class="py-2 text-slate-800 dark:text-slate-200" colSpan="2">${item.keterangan}</td>
-              <td class="py-2 text-right font-semibold text-emerald-600 pr-2">${formatRp(item.debit)}</td>
+              <td class="py-2 text-slate-800 dark:text-slate-200">${item.keterangan}</td>
+              <td class="py-2 text-right font-semibold text-emerald-600 pr-3">${formatRp(item.debit)}</td>
             </tr>
           `).join('');
 
           return `
             <tr onclick="toggleCategoryDetail('${rowId}')" class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/40 transition select-none text-xs sm:text-sm">
-              <td class="py-2.5 px-2 sm:px-3 font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+              <td class="py-2.5 px-3 font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
                 <i data-lucide="chevron-down" id="icon-${rowId}" class="w-3.5 h-3.5 text-emerald-600 transition-transform duration-200 shrink-0"></i>
                 <span class="truncate">${akun}</span>
               </td>
-              <td class="py-2.5 px-1 sm:px-3 text-center font-medium">${pemMap[akun].count}x</td>
-              <td class="py-2.5 px-2 sm:px-3 text-right font-bold text-emerald-600">${formatRp(pemMap[akun].sum)}</td>
-              <td class="py-2.5 px-1 sm:px-3 text-right text-[11px] font-semibold text-slate-500">${pct}%</td>
+              <td class="py-2.5 px-3 text-center font-medium">${pemMap[akun].count}x</td>
+              <td class="py-2.5 px-3 text-right font-bold text-emerald-600">${formatRp(pemMap[akun].sum)}</td>
             </tr>
             <tr id="${rowId}" class="hidden">
-              <td colSpan="4" class="p-0 border-b border-emerald-100 dark:border-slate-700">
+              <td colSpan="3" class="p-0 border-b border-emerald-100 dark:border-slate-700">
                 <table class="w-full text-left">
                   <tbody>${itemsHtml}</tbody>
                 </table>
               </td>
             </tr>
           `;
-        }).join('') : `<tr><td colSpan="4" class="p-4 text-center text-slate-400 text-xs">Tidak ada pemasukan pada periode ini.</td></tr>`;
+        }).join('') : `<tr><td colSpan="3" class="p-4 text-center text-slate-400 text-xs">Tidak ada pemasukan pada periode ini.</td></tr>`;
 
       document.getElementById('totalCountPemasukan').innerText = `${totalPemCount}x`;
       document.getElementById('totalSumPemasukan').innerText = formatRp(totalPemSum);
 
-      // Render Table Pengeluaran
+      // Render Table Pengeluaran (Tanpa Kolom PCT)
       document.getElementById('pengeluaranAccountBody').innerHTML = Object.keys(pengMap).length > 0 ? 
         Object.keys(pengMap).map((akun, idx) => {
-          const pct = totalPengSum > 0 ? ((pengMap[akun].sum / totalPengSum) * 100).toFixed(1) : 0;
           const rowId = `peng-detail-${idx}`;
 
           const itemsHtml = pengMap[akun].items.map(item => `
             <tr class="bg-rose-50/40 dark:bg-rose-950/20 text-xs">
               <td class="pl-6 py-2 font-medium text-slate-600 dark:text-slate-300">${item.tanggal}</td>
-              <td class="py-2 text-slate-800 dark:text-slate-200" colSpan="2">${item.keterangan}</td>
-              <td class="py-2 text-right font-semibold text-rose-600 pr-2">${formatRp(item.kredit)}</td>
+              <td class="py-2 text-slate-800 dark:text-slate-200">${item.keterangan}</td>
+              <td class="py-2 text-right font-semibold text-rose-600 pr-3">${formatRp(item.kredit)}</td>
             </tr>
           `).join('');
 
           return `
             <tr onclick="toggleCategoryDetail('${rowId}')" class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/40 transition select-none text-xs sm:text-sm">
-              <td class="py-2.5 px-2 sm:px-3 font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+              <td class="py-2.5 px-3 font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
                 <i data-lucide="chevron-down" id="icon-${rowId}" class="w-3.5 h-3.5 text-rose-600 transition-transform duration-200 shrink-0"></i>
                 <span class="truncate">${akun}</span>
               </td>
-              <td class="py-2.5 px-1 sm:px-3 text-center font-medium">${pengMap[akun].count}x</td>
-              <td class="py-2.5 px-2 sm:px-3 text-right font-bold text-rose-600">${formatRp(pengMap[akun].sum)}</td>
-              <td class="py-2.5 px-1 sm:px-3 text-right text-[11px] font-semibold text-slate-500">${pct}%</td>
+              <td class="py-2.5 px-3 text-center font-medium">${pengMap[akun].count}x</td>
+              <td class="py-2.5 px-3 text-right font-bold text-rose-600">${formatRp(pengMap[akun].sum)}</td>
             </tr>
             <tr id="${rowId}" class="hidden">
-              <td colSpan="4" class="p-0 border-b border-rose-100 dark:border-slate-700">
+              <td colSpan="3" class="p-0 border-b border-rose-100 dark:border-slate-700">
                 <table class="w-full text-left">
                   <tbody>${itemsHtml}</tbody>
                 </table>
               </td>
             </tr>
           `;
-        }).join('') : `<tr><td colSpan="4" class="p-4 text-center text-slate-400 text-xs">Tidak ada pengeluaran pada periode ini.</td></tr>`;
+        }).join('') : `<tr><td colSpan="3" class="p-4 text-center text-slate-400 text-xs">Tidak ada pengeluaran pada periode ini.</td></tr>`;
 
       document.getElementById('totalCountPengeluaran').innerText = `${totalPengCount}x`;
       document.getElementById('totalSumPengeluaran').innerText = formatRp(totalPengSum);
@@ -494,7 +486,6 @@
 
     let catChart, monChart;
     function renderCharts(rekap, currentRekap) {
-      // 1. CHART BULAT (DOUGHNUT) TUNGGAL DI ATAS: MEMBANDINGKAN PEMASUKAN VS PENGELUARAN BULAN INI
       const catCtx = document.getElementById('categoryChart').getContext('2d');
       if (catChart) catChart.destroy();
       
@@ -521,7 +512,6 @@
         }
       });
 
-      // 2. CHART TABUNG (BAR) DI BAWAH: TREN ARUS KAS BULANAN (2026)
       const months = Object.keys(rekap);
       const debitData = months.map(m => rekap[m].total_debit);
       const kreditData = months.map(m => rekap[m].total_kredit);
