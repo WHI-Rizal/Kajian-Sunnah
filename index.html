@@ -47,7 +47,7 @@
       </div>
       <div class="flex items-center gap-3">
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-100 border border-emerald-400/30 text-xs font-semibold backdrop-blur-sm">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Firebase Active
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Firebase Sync Active
         </span>
         <button id="themeToggle" class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition">
           <i data-lucide="moon" class="w-5 h-5"></i>
@@ -69,7 +69,7 @@
       </div>
     </div>
 
-    <!-- TAB NAVIGATION DENGAN TAB LAPORAN BARU -->
+    <!-- TAB NAVIGATION -->
     <div class="max-w-7xl mx-auto mt-6 flex gap-2 overflow-x-auto pb-2 no-print">
       <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-5 py-2.5 bg-white text-cyan-700 font-bold text-sm rounded-xl shadow-md transition flex items-center gap-2">
         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
@@ -147,7 +147,7 @@
       </div>
     </div>
 
-    <!-- VIEW 3: TAB LAPORAN REKAPITULASI KATEGORI AKUN (FITUR BARU) -->
+    <!-- VIEW 3: TAB LAPORAN DENGAN DROPDOWN DETAIL TRANSAKSI PER KATEGORI -->
     <div id="view-laporan" class="hidden space-y-6">
       <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
         <div>
@@ -168,10 +168,10 @@
           <table class="w-full text-left text-sm">
             <thead class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 uppercase text-xs font-semibold">
               <tr>
-                <th class="p-3">Kategori Akun Pemasukan</th>
-                <th class="p-3 text-center">Jumlah Transaksi</th>
-                <th class="p-3 text-right">Total Nominal</th>
-                <th class="p-3 text-right">Persentase</th>
+                <th class="p-3">KATEGORI AKUN PEMASUKAN</th>
+                <th class="p-3 text-center">JUMLAH TRANSAKSI</th>
+                <th class="p-3 text-right">TOTAL NOMINAL</th>
+                <th class="p-3 text-right">PERSENTASE</th>
               </tr>
             </thead>
             <tbody id="pemasukanAccountBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
@@ -187,19 +187,22 @@
         </div>
       </div>
 
-      <!-- REKAP PENGELUARAN -->
+      <!-- REKAP PENGELUARAN DENGAN ACCORDION / DROPDOWN TRANSAKSI -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6">
-        <h4 class="text-base font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
-          <i data-lucide="trending-down" class="w-5 h-5"></i> Rekapitulasi Pengeluaran (Kredit)
-        </h4>
+        <div class="flex justify-between items-center mb-4">
+          <h4 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2">
+            <i data-lucide="trending-down" class="w-5 h-5"></i> Rekapitulasi Pengeluaran (Kredit)
+          </h4>
+          <span class="text-xs text-slate-400 font-medium">Klik baris kategori untuk melihat/menyembunyikan rincian transaksi</span>
+        </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-rose-50 dark:bg-rose-950/30 text-rose-800 dark:text-rose-300 uppercase text-xs font-semibold">
               <tr>
-                <th class="p-3">Kategori Akun Pengeluaran</th>
-                <th class="p-3 text-center">Jumlah Transaksi</th>
-                <th class="p-3 text-right">Total Nominal</th>
-                <th class="p-3 text-right">Persentase</th>
+                <th class="p-3">KATEGORI AKUN PENGELUARAN</th>
+                <th class="p-3 text-center">JUMLAH TRANSAKSI</th>
+                <th class="p-3 text-right">TOTAL NOMINAL</th>
+                <th class="p-3 text-right">PERSENTASE</th>
               </tr>
             </thead>
             <tbody id="pengeluaranAccountBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
@@ -260,6 +263,15 @@
       if (activeBtn) activeBtn.className = "px-5 py-2.5 bg-white text-cyan-700 font-bold text-sm rounded-xl shadow-md transition flex items-center gap-2";
     };
 
+    window.toggleCategoryDetail = function(categoryId) {
+      const detailRow = document.getElementById(categoryId);
+      const icon = document.getElementById(`icon-${categoryId}`);
+      if (detailRow) {
+        detailRow.classList.toggle('hidden');
+        if (icon) icon.classList.toggle('rotate-180');
+      }
+    };
+
     const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num || 0);
 
     let globalData = null;
@@ -309,7 +321,7 @@
         </tr>
       `).join('');
 
-      // Render Tab Laporan (Breakdown Kategori)
+      // Render Tab Laporan (Dua Arah Accordion Dropdown)
       renderReportCategoryTables(txs);
 
       // Render Rekening Ustadz
@@ -334,31 +346,53 @@
 
       txs.forEach(t => {
         if (t.debit > 0) {
-          if (!pemMap[t.akun]) pemMap[t.akun] = { count: 0, sum: 0 };
+          if (!pemMap[t.akun]) pemMap[t.akun] = { count: 0, sum: 0, items: [] };
           pemMap[t.akun].count += 1;
           pemMap[t.akun].sum += t.debit;
+          pemMap[t.akun].items.push(t);
           totalPemSum += t.debit;
           totalPemCount += 1;
         }
         if (t.kredit > 0) {
-          if (!pengMap[t.akun]) pengMap[t.akun] = { count: 0, sum: 0 };
+          if (!pengMap[t.akun]) pengMap[t.akun] = { count: 0, sum: 0, items: [] };
           pengMap[t.akun].count += 1;
           pengMap[t.akun].sum += t.kredit;
+          pengMap[t.akun].items.push(t);
           totalPengSum += t.kredit;
           totalPengCount += 1;
         }
       });
 
-      // Render Table Pemasukan
+      // Render Table Pemasukan (Accordion)
       document.getElementById('pemasukanAccountBody').innerHTML = Object.keys(pemMap).length > 0 ? 
-        Object.keys(pemMap).map(akun => {
+        Object.keys(pemMap).map((akun, idx) => {
           const pct = totalPemSum > 0 ? ((pemMap[akun].sum / totalPemSum) * 100).toFixed(1) : 0;
+          const rowId = `pem-detail-${idx}`;
+          
+          const itemsHtml = pemMap[akun].items.map(item => `
+            <tr class="bg-emerald-50/40 dark:bg-emerald-950/20 text-xs">
+              <td class="pl-8 py-2 font-medium text-slate-600 dark:text-slate-300">${item.tanggal}</td>
+              <td class="py-2 text-slate-800 dark:text-slate-200" colSpan="2">${item.keterangan}</td>
+              <td class="py-2 text-right font-semibold text-emerald-600 pr-3">${formatRp(item.debit)}</td>
+            </tr>
+          `).join('');
+
           return `
-            <tr>
-              <td class="p-3 font-semibold text-slate-700 dark:text-slate-200">${akun}</td>
-              <td class="p-3 text-center">${pemMap[akun].count}x</td>
+            <tr onclick="toggleCategoryDetail('${rowId}')" class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/40 transition select-none">
+              <td class="p-3 font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <i data-lucide="chevron-down" id="icon-${rowId}" class="w-4 h-4 text-emerald-600 transition-transform duration-200"></i>
+                ${akun}
+              </td>
+              <td class="p-3 text-center font-medium">${pemMap[akun].count}x</td>
               <td class="p-3 text-right font-bold text-emerald-600">${formatRp(pemMap[akun].sum)}</td>
               <td class="p-3 text-right text-xs font-semibold text-slate-500">${pct}%</td>
+            </tr>
+            <tr id="${rowId}" class="hidden">
+              <td colSpan="4" class="p-0 border-b border-emerald-100 dark:border-slate-700">
+                <table class="w-full text-left">
+                  <tbody>${itemsHtml}</tbody>
+                </table>
+              </td>
             </tr>
           `;
         }).join('') : `<tr><td colSpan="4" class="p-4 text-center text-slate-400">Tidak ada pemasukan pada periode ini.</td></tr>`;
@@ -366,22 +400,44 @@
       document.getElementById('totalCountPemasukan').innerText = `${totalPemCount}x`;
       document.getElementById('totalSumPemasukan').innerText = formatRp(totalPemSum);
 
-      // Render Table Pengeluaran
+      // Render Table Pengeluaran (Accordion Dropdown)
       document.getElementById('pengeluaranAccountBody').innerHTML = Object.keys(pengMap).length > 0 ? 
-        Object.keys(pengMap).map(akun => {
+        Object.keys(pengMap).map((akun, idx) => {
           const pct = totalPengSum > 0 ? ((pengMap[akun].sum / totalPengSum) * 100).toFixed(1) : 0;
+          const rowId = `peng-detail-${idx}`;
+
+          const itemsHtml = pengMap[akun].items.map(item => `
+            <tr class="bg-rose-50/40 dark:bg-rose-950/20 text-xs">
+              <td class="pl-8 py-2 font-medium text-slate-600 dark:text-slate-300">${item.tanggal}</td>
+              <td class="py-2 text-slate-800 dark:text-slate-200" colSpan="2">${item.keterangan}</td>
+              <td class="py-2 text-right font-semibold text-rose-600 pr-3">${formatRp(item.kredit)}</td>
+            </tr>
+          `).join('');
+
           return `
-            <tr>
-              <td class="p-3 font-semibold text-slate-700 dark:text-slate-200">${akun}</td>
-              <td class="p-3 text-center">${pengMap[akun].count}x</td>
+            <tr onclick="toggleCategoryDetail('${rowId}')" class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/40 transition select-none">
+              <td class="p-3 font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <i data-lucide="chevron-down" id="icon-${rowId}" class="w-4 h-4 text-rose-600 transition-transform duration-200"></i>
+                ${akun}
+              </td>
+              <td class="p-3 text-center font-medium">${pengMap[akun].count}x</td>
               <td class="p-3 text-right font-bold text-rose-600">${formatRp(pengMap[akun].sum)}</td>
               <td class="p-3 text-right text-xs font-semibold text-slate-500">${pct}%</td>
+            </tr>
+            <tr id="${rowId}" class="hidden">
+              <td colSpan="4" class="p-0 border-b border-rose-100 dark:border-slate-700">
+                <table class="w-full text-left">
+                  <tbody>${itemsHtml}</tbody>
+                </table>
+              </td>
             </tr>
           `;
         }).join('') : `<tr><td colSpan="4" class="p-4 text-center text-slate-400">Tidak ada pengeluaran pada periode ini.</td></tr>`;
 
       document.getElementById('totalCountPengeluaran').innerText = `${totalPengCount}x`;
       document.getElementById('totalSumPengeluaran').innerText = formatRp(totalPengSum);
+
+      lucide.createIcons();
     }
 
     let catChart, monChart;
