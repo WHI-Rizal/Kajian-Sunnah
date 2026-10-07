@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RuangDakwah - Laporan Keuangan Yayasan</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
+
+  <!-- HEADER BRANDING TERINSPIRASI DOMPETKITA -->
+  <header class="bg-gradient-to-r from-cyan-500 to-teal-500 text-white pt-6 pb-20 px-4 sm:px-8 rounded-b-[2rem] shadow-lg relative">
+    <div class="max-w-7xl mx-auto flex justify-between items-center mb-6">
+      <div class="flex items-center gap-3">
+        <div class="p-3 bg-white/20 backdrop-blur-md rounded-2xl shadow-inner">
+          <i data-lucide="building-2" class="w-7 h-7 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight">RuangDakwah</h1>
+          <p class="text-xs sm:text-sm text-cyan-100 font-medium">Laporan Keuangan & Mutasi Yayasan</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-100 border border-emerald-400/30 text-xs font-semibold backdrop-blur-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Firebase Active
+        </span>
+        <button id="themeToggle" class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition">
+          <i data-lucide="moon" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN BANNER SALDO KAS -->
+    <div class="max-w-7xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
+      <div>
+        <p class="text-xs uppercase tracking-wider font-bold text-cyan-100 mb-1">TOTAL SALDO KAS YAYASAN</p>
+        <h2 id="totalSaldoKas" class="text-3xl sm:text-4xl font-extrabold tracking-tight">Rp 0</h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="switchTab('transaksi')" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-xl shadow-md transition flex items-center gap-2">
+          <i data-lucide="plus" class="w-4 h-4"></i> Catat Mutasi
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB NAVIGATION -->
+    <div class="max-w-7xl mx-auto mt-6 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-5 py-2.5 bg-white text-cyan-700 font-bold text-sm rounded-xl shadow-md transition flex items-center gap-2">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+      </button>
+      <button onclick="switchTab('transaksi')" id="btn-tab-transaksi" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold text-sm rounded-xl backdrop-blur-md transition flex items-center gap-2">
+        <i data-lucide="arrow-left-right" class="w-4 h-4"></i> Transaksi Kas
+      </button>
+      <button onclick="switchTab('ustadz')" id="btn-tab-ustadz" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold text-sm rounded-xl backdrop-blur-md transition flex items-center gap-2">
+        <i data-lucide="users" class="w-4 h-4"></i> Rekening Ustadz
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENT SECTION -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-8 -mt-10 space-y-6 pb-12">
+
+    <!-- VIEW 1: DASHBOARD MAIN -->
+    <div id="view-dashboard" class="space-y-6">
+      
+      <!-- KPI CARDS RINGKASAN -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> PEMASUKAN
+            </span>
+            <p id="kpiPemasukan" class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
+            <p class="text-xs text-slate-400 mt-0.5">Total penerimaan dana</p>
+          </div>
+          <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 rounded-2xl">
+            <i data-lucide="trending-up" class="w-6 h-6"></i>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-rose-600 dark:text-rose-400">
+              <span class="w-2 h-2 rounded-full bg-rose-500"></span> PENGELUARAN
+            </span>
+            <p id="kpiPengeluaran" class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
+            <p class="text-xs text-slate-400 mt-0.5">Total operasional & dakwah</p>
+          </div>
+          <div class="p-3 bg-rose-50 dark:bg-rose-950/40 text-rose-600 rounded-2xl">
+            <i data-lucide="trending-down" class="w-6 h-6"></i>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-cyan-600 dark:text-cyan-400">
+              <span class="w-2 h-2 rounded-full bg-cyan-500"></span> SALDO BERJALAN
+            </span>
+            <p id="kpiSaldoAkhir" class="text-2xl font-bold text-cyan-600 dark:text-cyan-400 mt-1">Rp 0</p>
+            <p class="text-xs text-slate-400 mt-0.5">Saldo kas bersih saat ini</p>
+          </div>
+          <div class="p-3 bg-cyan-50 dark:bg-cyan-950/40 text-cyan-600 rounded-2xl">
+            <i data-lucide="wallet" class="w-6 h-6"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTION BUTTONS -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button onclick="switchTab('transaksi')" class="py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> Catat Transaksi
+        </button>
+        <button onclick="switchTab('transaksi')" class="py-3 px-4 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+          <i data-lucide="arrow-left-right" class="w-4 h-4"></i> Lihat Mutasi Kas
+        </button>
+        <button onclick="switchTab('ustadz')" class="py-3 px-4 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+          <i data-lucide="users" class="w-4 h-4"></i> Data Rekening Ustadz
+        </button>
+      </div>
+
+      <!-- CHARTS SECTION -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+          <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-5 h-5 text-cyan-500"></i> PEMASUKAN PER KATEGORI
+          </h3>
+          <div class="relative h-64">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+          <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <i data-lucide="bar-chart-2" class="w-5 h-5 text-emerald-500"></i> TREN ARUS KAS BULANAN
+          </h3>
+          <div class="relative h-64">
+            <canvas id="monthlyChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VIEW 2: TRANSAKSI TABLE -->
+    <div id="view-transaksi" class="hidden space-y-4">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">Mutasi Transaksi Kas Yayasan</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 uppercase text-xs font-semibold">
+              <tr>
+                <th class="p-3">Tanggal</th>
+                <th class="p-3">Akun</th>
+                <th class="p-3">Keterangan</th>
+                <th class="p-3 text-right">Debit</th>
+                <th class="p-3 text-right">Kredit</th>
+                <th class="p-3 text-right">Saldo</th>
+              </tr>
+            </thead>
+            <tbody id="txTableBody" class="divide-y divide-slate-100 dark:divide-slate-700">
+              <tr><td colSpan="6" class="p-4 text-center text-slate-400">Memuat data transaksi...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: REKENING USTADZ -->
+    <div id="view-ustadz" class="hidden space-y-4">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
+          <i data-lucide="users" class="w-5 h-5 text-cyan-500"></i> Daftar Rekening Ustadz & Pengajar
+        </h3>
+        <div id="ustadzCards" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <p class="text-slate-400">Memuat data rekening...</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FIREBASE ENGINE & REALTIME SYNC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBLszRhB-nnuoHM_tNavnqhaL_aHKZhD8M",
+      authDomain: "kajian-sunnah-5c0eb.firebaseapp.com",
+      databaseURL: "https://kajian-sunnah-5c0eb-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "kajian-sunnah-5c0eb",
+      storageBucket: "kajian-sunnah-5c0eb.firebasestorage.app",
+      messagingSenderId: "452456498562",
+      appId: "1:452456498562:web:3abce33dee6324a7f07b9b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    lucide.createIcons();
+
+    // Dark Mode Toggle
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+
+    // Tab Switcher
+    window.switchTab = function(tabName) {
+      ['dashboard', 'transaksi', 'ustadz'].forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        const btn = document.getElementById(`btn-tab-${t}`);
+        if (btn) {
+          btn.className = "px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold text-sm rounded-xl backdrop-blur-md transition flex items-center gap-2";
+        }
+      });
+
+      document.getElementById(`view-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`btn-tab-${tabName}`);
+      if (activeBtn) {
+        activeBtn.className = "px-5 py-2.5 bg-white text-cyan-700 font-bold text-sm rounded-xl shadow-md transition flex items-center gap-2";
+      }
+    };
+
+    const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num || 0);
+
+    // Fetch Firebase Realtime
+    const yayasanRef = ref(db, 'yayasan_ruang_dakwah');
+    onValue(yayasanRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      const rekap = data.rekap_bulanan || {};
+      const latestMonthKey = Object.keys(rekap).pop() || '2026-03';
+      const currentRekap = rekap[latestMonthKey] || { total_debit: 0, total_kredit: 0, saldo_akhir: 0 };
+
+      // Update Cards
+      document.getElementById('totalSaldoKas').innerText = formatRp(currentRekap.saldo_akhir);
+      document.getElementById('kpiPemasukan').innerText = formatRp(currentRekap.total_debit);
+      document.getElementById('kpiPengeluaran').innerText = formatRp(currentRekap.total_kredit);
+      document.getElementById('kpiSaldoAkhir').innerText = formatRp(currentRekap.saldo_akhir);
+
+      // Render Table Transaksi
+      const txs = data.transaksi?.[latestMonthKey] ? Object.values(data.transaksi[latestMonthKey]) : [];
+      const tbody = document.getElementById('txTableBody');
+      tbody.innerHTML = txs.map(t => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+          <td class="p-3 font-medium">${t.tanggal}</td>
+          <td class="p-3"><span class="px-2 py-1 bg-cyan-100 text-cyan-800 rounded-md text-xs font-semibold">${t.akun}</span></td>
+          <td class="p-3">${t.keterangan}</td>
+          <td class="p-3 text-right text-emerald-600 font-semibold">${t.debit > 0 ? formatRp(t.debit) : '-'}</td>
+          <td class="p-3 text-right text-rose-600 font-semibold">${t.kredit > 0 ? formatRp(t.kredit) : '-'}</td>
+          <td class="p-3 text-right font-bold">${formatRp(t.saldo_setelah)}</td>
+        </tr>
+      `).join('');
+
+      // Render Rekening Ustadz
+      const ustadzList = data.rekening_ustadz ? Object.values(data.rekening_ustadz) : [];
+      document.getElementById('ustadzCards').innerHTML = ustadzList.map(u => `
+        <div class="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-600">
+          <p class="font-bold text-slate-800 dark:text-slate-100">${u.nama}</p>
+          <p class="text-xs text-cyan-600 dark:text-cyan-400 font-semibold mt-1">${u.bank}</p>
+          <p class="text-sm font-mono tracking-wide text-slate-600 dark:text-slate-300 mt-0.5">${u.no_rekening}</p>
+        </div>
+      `).join('');
+
+      // Render Charts
+      renderCharts(rekap, data.transaksi?.[latestMonthKey] || {});
+    });
+
+    let catChart, monChart;
+    function renderCharts(rekap, currentTx) {
+      const categories = {};
+      Object.values(currentTx).forEach(t => {
+        if (t.debit > 0) categories[t.akun] = (categories[t.akun] || 0) + t.debit;
+      });
+
+      const catCtx = document.getElementById('categoryChart').getContext('2d');
+      if (catChart) catChart.destroy();
+      catChart = new Chart(catCtx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(categories),
+          datasets: [{
+            data: Object.values(categories),
+            backgroundColor: ['#06b6d4', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      const months = Object.keys(rekap);
+      const debitData = months.map(m => rekap[m].total_debit);
+      const kreditData = months.map(m => rekap[m].total_kredit);
+
+      const monCtx = document.getElementById('monthlyChart').getContext('2d');
+      if (monChart) monChart.destroy();
+      monChart = new Chart(monCtx, {
+        type: 'bar',
+        data: {
+          labels: months,
+          datasets: [
+            { label: 'Pemasukan', data: debitData, backgroundColor: '#10b981' },
+            { label: 'Pengeluaran', data: kreditData, backgroundColor: '#f43f5e' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+  </script>
+</body>
+</html>
