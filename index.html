@@ -78,7 +78,7 @@
         <i data-lucide="arrow-left-right" class="w-4 h-4"></i> Transaksi Kas
       </button>
       <button onclick="switchTab('laporan')" id="btn-tab-laporan" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold text-sm rounded-xl backdrop-blur-md transition flex items-center gap-2">
-        <i data-lucide="file-text" class="w-4 h-4"></i> Laporan Akun
+        <i data-lucide="file-text" class="w-4 h-4"></i> Laporan Periode
       </button>
       <button onclick="switchTab('ustadz')" id="btn-tab-ustadz" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold text-sm rounded-xl backdrop-blur-md transition flex items-center gap-2">
         <i data-lucide="users" class="w-4 h-4"></i> Rekening Ustadz
@@ -147,7 +147,7 @@
       </div>
     </div>
 
-    <!-- VIEW 3: TAB LAPORAN DENGAN DROPDOWN DETAIL TRANSAKSI PER KATEGORI -->
+    <!-- VIEW 3: TAB LAPORAN AKUN DENGAN TOTAL SURPLUS / SISA SALDO KAS -->
     <div id="view-laporan" class="hidden space-y-6">
       <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
         <div>
@@ -187,7 +187,7 @@
         </div>
       </div>
 
-      <!-- REKAP PENGELUARAN DENGAN ACCORDION / DROPDOWN TRANSAKSI -->
+      <!-- REKAP PENGELUARAN DENGAN Rincian SISA SALDO KAS -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6">
         <div class="flex justify-between items-center mb-4">
           <h4 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2">
@@ -206,12 +206,32 @@
               </tr>
             </thead>
             <tbody id="pengeluaranAccountBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
-            <tfoot class="bg-slate-50 dark:bg-slate-700/50 font-bold text-slate-800 dark:text-slate-100">
-              <tr>
+            <tfoot class="font-bold border-t border-slate-200 dark:border-slate-700">
+              <tr class="bg-slate-50 dark:bg-slate-700/50 text-slate-800 dark:text-slate-100">
                 <td class="p-3">TOTAL PENGELUARAN</td>
                 <td id="totalCountPengeluaran" class="p-3 text-center">0</td>
                 <td id="totalSumPengeluaran" class="p-3 text-right text-rose-600">Rp 0</td>
                 <td class="p-3 text-right">100%</td>
+              </tr>
+              <!-- HASIL DUKUNGAN SURPLUS / DEFISIT KAS PERIODE -->
+              <tr class="bg-emerald-50/60 dark:bg-emerald-950/30 border-t border-emerald-100">
+                <td class="p-3 text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                  <i data-lucide="scale" class="w-4 h-4"></i>
+                  SURPLUS / DEFISIT OPERASIONAL BULAN INI (Pemasukan - Pengeluaran)
+                </td>
+                <td class="p-3 text-center text-xs text-slate-500">-</td>
+                <td id="netSurplusDeficit" class="p-3 text-right text-base text-emerald-600">Rp 0</td>
+                <td class="p-3 text-right text-xs text-slate-500">-</td>
+              </tr>
+              <!-- AKUMULASI SISA SALDO KAS AKHIR -->
+              <tr class="bg-cyan-50/80 dark:bg-cyan-950/40 border-t border-cyan-200 text-cyan-900 dark:text-cyan-200">
+                <td class="p-3 font-extrabold flex items-center gap-2">
+                  <i data-lucide="wallet" class="w-4 h-4 text-cyan-600"></i>
+                  AKUMULASI SISA SALDO KAS YAYASAN
+                </td>
+                <td class="p-3 text-center text-xs text-slate-500">-</td>
+                <td id="totalEndingBalance" class="p-3 text-right text-lg font-extrabold text-cyan-600">Rp 0</td>
+                <td class="p-3 text-right text-xs text-slate-500">-</td>
               </tr>
             </tfoot>
           </table>
@@ -321,8 +341,8 @@
         </tr>
       `).join('');
 
-      // Render Tab Laporan (Dua Arah Accordion Dropdown)
-      renderReportCategoryTables(txs);
+      // Render Tab Laporan Akun
+      renderReportCategoryTables(txs, currentRekap.saldo_akhir);
 
       // Render Rekening Ustadz
       const ustadzList = globalData.rekening_ustadz ? Object.values(globalData.rekening_ustadz) : [];
@@ -337,7 +357,7 @@
       renderCharts(rekap, globalData.transaksi?.[selectedMonth] || {});
     }
 
-    function renderReportCategoryTables(txs) {
+    function renderReportCategoryTables(txs, endingBalance) {
       const pemMap = {};
       const pengMap = {};
 
@@ -436,6 +456,21 @@
 
       document.getElementById('totalCountPengeluaran').innerText = `${totalPengCount}x`;
       document.getElementById('totalSumPengeluaran').innerText = formatRp(totalPengSum);
+
+      // Kalkulasi Net Surplus / Defisit Operasional
+      const netAmount = totalPemSum - totalPengSum;
+      const netElement = document.getElementById('netSurplusDeficit');
+      
+      if (netAmount >= 0) {
+        netElement.innerText = formatRp(netAmount);
+        netElement.className = "p-3 text-right text-base font-bold text-emerald-600 dark:text-emerald-400";
+      } else {
+        netElement.innerText = formatRp(netAmount);
+        netElement.className = "p-3 text-right text-base font-bold text-rose-600 dark:text-rose-400";
+      }
+
+      // Display Akumulasi Sisa Saldo Kas Akhir
+      document.getElementById('totalEndingBalance').innerText = formatRp(endingBalance);
 
       lucide.createIcons();
     }
