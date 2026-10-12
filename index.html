@@ -601,7 +601,9 @@
         plugins: [centerText]
       });
 
-      const months = Object.keys(rekap).sort();
+      // Tren bulanan cuma nampilin bulan di tahun yang sama dengan periode terpilih
+      const tahun = String(selectedMonth).split('-')[0];
+      const months = Object.keys(rekap).filter(m => m.startsWith(tahun)).sort();
       if (monChart) monChart.destroy();
       monChart = new Chart(document.getElementById('monthlyChart'), {
         type: 'bar',
