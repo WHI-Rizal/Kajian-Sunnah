@@ -28,6 +28,9 @@
     @media print {
       header, .no-print { display: none !important; }
       main { margin-top: 0 !important; }
+      body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      #view-laporan > div { box-shadow: none !important; border: none !important; }
+      .print-only { display: block !important; }
     }
   </style>
 </head>
@@ -172,14 +175,31 @@
 
     <!-- VIEW 3: LAPORAN AKUN -->
     <div id="view-laporan" class="hidden space-y-6">
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-        <div>
-          <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">Rekap per Kategori Akun</h3>
-          <p class="text-xs text-slate-400 mt-1">Periode: <span id="reportMonthTitle" class="font-bold text-cyan-600"></span></p>
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 kop-card">
+
+        <!-- KOP SURAT -->
+        <div class="flex items-center gap-4 pb-4 border-b-4 border-double border-slate-800 dark:border-slate-300">
+          <div class="p-3 bg-gradient-to-br from-cyan-500 to-teal-500 text-white rounded-2xl shrink-0">
+            <i data-lucide="building-2" class="w-8 h-8 sm:w-10 sm:h-10"></i>
+          </div>
+          <div class="flex-1 min-w-0 text-center sm:text-left">
+            <h2 id="kopNama" class="text-lg sm:text-2xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100 uppercase"></h2>
+            <p id="kopSub" class="text-xs sm:text-sm font-semibold text-cyan-700 dark:text-cyan-400"></p>
+            <p id="kopAlamat" class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1"></p>
+            <p id="kopKontak" class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400"></p>
+          </div>
         </div>
-        <button onclick="window.print()" class="self-start sm:self-auto px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-2 whitespace-nowrap no-print">
-          <i data-lucide="printer" class="w-4 h-4"></i> Cetak Laporan
-        </button>
+
+        <!-- JUDUL LAPORAN -->
+        <div class="pt-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+          <div>
+            <h3 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100">Laporan Keuangan Bulanan</h3>
+            <p class="text-xs text-slate-400 mt-1">Periode: <span id="reportMonthTitle" class="font-bold text-cyan-600"></span></p>
+          </div>
+          <button onclick="window.print()" class="self-start sm:self-auto px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-2 whitespace-nowrap no-print">
+            <i data-lucide="printer" class="w-4 h-4"></i> Cetak Laporan
+          </button>
+        </div>
       </div>
 
       <!-- REKAP PEMASUKAN -->
@@ -235,23 +255,53 @@
           </tfoot>
         </table>
 
-        <!-- HASIL KAS BERSIH -->
-        <div class="pt-2 space-y-2 border-t border-slate-100 dark:border-slate-700">
-          <div class="p-3 bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900 rounded-xl flex justify-between items-center gap-2">
-            <div class="flex items-center gap-2 min-w-0">
-              <i data-lucide="scale" class="w-4 h-4 text-emerald-600 shrink-0"></i>
-              <span class="text-xs sm:text-sm font-bold text-emerald-900 dark:text-emerald-200">Surplus / Defisit Bulan Ini</span>
-            </div>
-            <span id="netSurplusDeficit" class="text-sm sm:text-base font-extrabold text-emerald-600 shrink-0 text-right">Rp 0</span>
-          </div>
+        <!-- RINGKASAN SALDO -->
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-700">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Ringkasan Saldo Kas</h4>
+          <div class="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden text-xs sm:text-sm">
 
-          <div class="p-3 bg-cyan-50/80 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-900 rounded-xl flex justify-between items-center gap-2">
-            <div class="flex items-center gap-2 min-w-0">
-              <i data-lucide="wallet" class="w-4 h-4 text-cyan-600 shrink-0"></i>
-              <span class="text-xs sm:text-sm font-extrabold text-cyan-900 dark:text-cyan-200">Sisa Saldo Kas Yayasan</span>
+            <div class="p-3 flex justify-between items-center gap-2 bg-slate-50 dark:bg-slate-700/40">
+              <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="landmark" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                <span class="font-semibold text-slate-700 dark:text-slate-200">Saldo Awal <span id="saldoAwalLabel" class="font-normal text-slate-400"></span></span>
+              </div>
+              <span id="saldoAwal" class="font-bold text-slate-800 dark:text-slate-100 shrink-0 text-right whitespace-nowrap">Rp 0</span>
             </div>
-            <span id="totalEndingBalance" class="text-base sm:text-lg font-extrabold text-cyan-600 shrink-0 text-right">Rp 0</span>
+
+            <div class="p-3 flex justify-between items-center gap-2 border-t border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                <span class="font-medium text-slate-600 dark:text-slate-300">Total Pemasukan</span>
+              </div>
+              <span id="ringkasPemasukan" class="font-bold text-emerald-600 shrink-0 text-right whitespace-nowrap">Rp 0</span>
+            </div>
+
+            <div class="p-3 flex justify-between items-center gap-2 border-t border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="minus-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+                <span class="font-medium text-slate-600 dark:text-slate-300">Total Pengeluaran</span>
+              </div>
+              <span id="ringkasPengeluaran" class="font-bold text-rose-600 shrink-0 text-right whitespace-nowrap">Rp 0</span>
+            </div>
+
+            <div class="p-3 flex justify-between items-center gap-2 border-t border-dashed border-slate-300 dark:border-slate-600">
+              <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="scale" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                <span class="font-semibold text-slate-700 dark:text-slate-200">Surplus / Defisit Bulan Ini</span>
+              </div>
+              <span id="netSurplusDeficit" class="font-extrabold text-emerald-600 shrink-0 text-right whitespace-nowrap">Rp 0</span>
+            </div>
+
+            <div class="p-3 flex justify-between items-center gap-2 bg-cyan-50/80 dark:bg-cyan-950/40 border-t-2 border-cyan-200 dark:border-cyan-900">
+              <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="wallet" class="w-4 h-4 text-cyan-600 shrink-0"></i>
+                <span class="font-extrabold text-cyan-900 dark:text-cyan-200">Sisa Saldo Kas Yayasan <span id="saldoAkhirLabel" class="font-medium text-cyan-700/70 dark:text-cyan-300/70"></span></span>
+              </div>
+              <span id="totalEndingBalance" class="text-sm sm:text-lg font-extrabold text-cyan-600 shrink-0 text-right whitespace-nowrap">Rp 0</span>
+            </div>
           </div>
+          <p class="text-[11px] text-slate-400 mt-2">Saldo Awal + Pemasukan &minus; Pengeluaran = Sisa Saldo</p>
+          <p id="tglCetak" class="hidden print-only text-[11px] text-slate-400 mt-4 text-right"></p>
         </div>
       </div>
     </div>
@@ -284,10 +334,23 @@
     // true = nama pengirim transfer ditampilkan sebagai inisial (contoh: "S. Z.")
     const SAMARKAN_NAMA_DONATUR = true;
 
+    // ==== DATA KOP LAPORAN (silakan ganti sesuai data yayasan) ====
+    const KOP = {
+      nama: 'Yayasan RuangDakwah',
+      sub: 'Laporan Keuangan & Mutasi Kas Yayasan',
+      alamat: 'Alamat yayasan diisi di sini',
+      kontak: 'Telp/WA: 08xx-xxxx-xxxx  |  Email: email@yayasan.org'
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
     lucide.createIcons();
+
+    document.getElementById('kopNama').innerText = KOP.nama;
+    document.getElementById('kopSub').innerText = KOP.sub;
+    document.getElementById('kopAlamat').innerText = KOP.alamat;
+    document.getElementById('kopKontak').innerText = KOP.kontak;
 
     // ==== HELPER FORMAT ====
     const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -532,9 +595,24 @@
       const netAmount = totalPemSum - totalPengSum;
       const netElement = document.getElementById('netSurplusDeficit');
       netElement.innerText = formatRp(netAmount);
-      netElement.className = `text-sm sm:text-base font-extrabold shrink-0 text-right ${netAmount >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+      netElement.className = `font-extrabold shrink-0 text-right whitespace-nowrap ${netAmount >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
 
-      document.getElementById('totalEndingBalance').innerText = formatRp(endingBalance);
+      // Saldo awal = sisa saldo akhir dikurangi surplus/defisit bulan ini
+      const saldoAkhir = endingBalance || 0;
+      const saldoAwal = saldoAkhir - netAmount;
+      const [thn, bln] = String(selectedMonth).split('-').map(Number);
+      const hariTerakhir = new Date(thn, bln, 0).getDate();
+      const blnPendek = BULAN_PENDEK[bln - 1] || '';
+
+      document.getElementById('saldoAwal').innerText = formatRp(saldoAwal);
+      document.getElementById('saldoAwalLabel').innerText = `(per 1 ${blnPendek} ${thn})`;
+      document.getElementById('ringkasPemasukan').innerText = '+ ' + formatRp(totalPemSum);
+      document.getElementById('ringkasPengeluaran').innerText = '\u2212 ' + formatRp(totalPengSum);
+      document.getElementById('saldoAkhirLabel').innerText = `(per ${hariTerakhir} ${blnPendek} ${thn})`;
+      document.getElementById('totalEndingBalance').innerText = formatRp(saldoAkhir);
+
+      const now = new Date();
+      document.getElementById('tglCetak').innerText = `Dicetak pada ${now.getDate()} ${BULAN[now.getMonth()]} ${now.getFullYear()}`;
       lucide.createIcons();
     }
 
