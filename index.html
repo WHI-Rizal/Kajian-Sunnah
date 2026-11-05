@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RuangDakwah - Laporan Keuangan Yayasan</title>
   <meta name="description" content="Laporan keuangan terbuka Yayasan RuangDakwah: saldo kas, dana zakat, mutasi, dan laporan bulanan yang bisa dicek siapa saja.">
-  <meta name="theme-color" content="#06b6d4">
+  <meta name="theme-color" content="#0E362E">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="RuangDakwah">
   <meta property="og:title" content="Laporan Keuangan Yayasan RuangDakwah">
@@ -15,7 +15,7 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2306b6d4'/%3E%3Cpath d='M18 48V26l14-10 14 10v22H36V36h-8v12z' fill='white'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E362E'/%3E%3Cpath fill='%23DFBD62' d='M32 9l7.9 8.6 11.7-.8-.8 11.7L59.4 36l-8.6 7.9.8 11.7-11.7-.8L32 63.4l-7.9-8.6-11.7.8.8-11.7L4.6 36l8.6-7.9-.8-11.7 11.7.8z' transform='translate(0 -4) scale(1)'/%3E%3C/svg%3E">
   <script>
     // Tema: pakai pilihan terakhir, kalau belum pernah pilih ikut setting HP/laptop
     (function () {
@@ -34,26 +34,42 @@
       darkMode: 'class',
       theme: {
         extend: {
+          // Palet "Islami hangat": cyan = hijau pinus (warna utama), amber = emas (aksen & zakat),
+          // slate = abu kehijauan (teks & latar). Nama kelas lama tetap dipakai, warnanya yang diganti.
           colors: {
-            brand: { 50: '#ecfeff', 100: '#cffafe', 500: '#06b6d4', 600: '#0891b2', 700: '#0e7490' }
-          }
+            cyan:  { 50:'#EEF6F3',100:'#D5EAE2',200:'#ACD5C6',300:'#7DB9A5',400:'#4E9A83',500:'#2C7D67',600:'#1B6553',700:'#155244',800:'#114238',900:'#0E362E',950:'#071F1A' },
+            teal:  { 50:'#EDF5F2',100:'#D2E7DF',200:'#A6CFC0',300:'#74B29C',400:'#46927A',500:'#1F7560',600:'#165A4A',700:'#12493D',800:'#0F3B32',900:'#0C3029',950:'#061A16' },
+            amber: { 50:'#FBF6E9',100:'#F5EACB',200:'#EBD597',300:'#DFBD62',400:'#D2A840',500:'#BF922B',600:'#A27822',700:'#7F5D1E',800:'#66491C',900:'#523B19',950:'#2E200C' },
+            emerald: { 50:'#EEF7F1',100:'#D4EDDD',200:'#A8DABC',300:'#74C097',400:'#46A374',500:'#2A875B',600:'#1F6E4A',700:'#1A5A3D',800:'#164A33',900:'#123D2B',950:'#08221A' },
+            rose:  { 50:'#FBF1EE',100:'#F6DDD7',200:'#EDB9AE',300:'#E0907F',400:'#CE6852',500:'#B84E39',600:'#9F3A2E',700:'#843027',800:'#6C2922',900:'#59241F',950:'#30100D' },
+            slate: { 50:'#F4F7F5',100:'#E8EEEA',200:'#D3DDD7',300:'#B2C1B8',400:'#849689',500:'#5E7066',600:'#4A5A51',700:'#34443C',800:'#22312A',900:'#15221D',950:'#0B1612' }
+          },
+          fontFamily: { kufi: ['"Reem Kufi"', 'sans-serif'] }
         }
       }
     }
   </script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Reem+Kufi:wght@500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@1.69.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-kufi { font-family: 'Reem Kufi', 'Plus Jakarta Sans', sans-serif; letter-spacing: .005em; }
+    .angka { font-variant-numeric: tabular-nums; }
+    /* Header hijau pinus dengan motif bintang delapan tipis */
+    .pola { background-color: #0E362E; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23DFBD62' stroke-opacity='.16' stroke-width='1'%3E%3Cpath d='M32 14l5.3 5.7 7.7-.4-.4 7.7L50 32l-5.4 5.3.4 7.7-7.7-.4L32 50l-5.3-5.4-7.7.4.4-7.7L14 32l5.4-5.3-.4-7.7 7.7.4z'/%3E%3Cpath d='M0 0l14 14M64 0L50 14M0 64l14-14M64 64L50 50'/%3E%3C/g%3E%3C/svg%3E"); background-size: 64px 64px; }
+    /* Panel lengkung mihrab untuk saldo kas */
+    .mihrab { border-radius: 50% 50% 1.25rem 1.25rem / 6.5rem 6.5rem 1.25rem 1.25rem; box-shadow: inset 0 0 0 1px rgba(191,146,43,.55), 0 0 0 6px rgba(223,189,98,.10); }
+    @media (min-width: 640px) { .mihrab { border-radius: 50% 50% 1.5rem 1.5rem / 8rem 8rem 1.5rem 1.5rem; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
     /* Skeleton saat data belum masuk, biar nggak keliatan "Rp 0" */
     .is-loading .amt { color: transparent !important; background: rgba(148,163,184,.35); border-radius: .5rem; animation: pulse 1.4s ease-in-out infinite; }
     @keyframes pulse { 50% { opacity: .45; } }
     @media print {
       header, .no-print { display: none !important; }
       main { margin-top: 0 !important; }
-      body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      html, body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       #view-laporan > div { box-shadow: none !important; border: none !important; }
       .print-only { display: block !important; }
     }
@@ -62,58 +78,60 @@
 <body class="is-loading bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
 
   <!-- HEADER BRANDING -->
-  <header class="bg-gradient-to-r from-cyan-500 to-teal-500 text-white pt-6 pb-24 px-4 sm:px-8 rounded-b-[2rem] shadow-lg relative">
-    <div class="max-w-7xl mx-auto flex justify-between items-center mb-6">
+  <header class="pola text-white pt-6 pb-12 sm:pb-14 px-4 sm:px-8 relative">
+    <div class="max-w-7xl mx-auto flex justify-between items-center mb-8">
       <div class="flex items-center gap-3">
-        <div class="p-3 bg-white/20 backdrop-blur-md rounded-2xl shadow-inner">
-          <i data-lucide="building-2" class="w-7 h-7 text-white"></i>
+        <div class="w-11 h-11 rounded-xl bg-amber-400/15 ring-1 ring-amber-300/40 flex items-center justify-center">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="w-6 h-6 text-amber-300"><path fill="currentColor" d="M12 1.6l3 3.3 4.4-.3-.3 4.4 3.3 3-3.3 3 .3 4.4-4.4-.3-3 3.3-3-3.3-4.4.3.3-4.4-3.3-3 3.3-3-.3-4.4 4.4.3z"/></svg>
         </div>
         <div>
-          <h1 class="text-xl sm:text-2xl font-bold tracking-tight">RuangDakwah</h1>
-          <p class="text-xs sm:text-sm text-white/90 font-medium">Laporan Keuangan & Mutasi Yayasan</p>
+          <h1 class="font-kufi text-2xl sm:text-[1.75rem] font-semibold leading-none">RuangDakwah</h1>
+          <p class="text-xs sm:text-sm text-white/80 mt-1">Laporan keuangan yayasan<span class="hidden sm:inline">, terbuka untuk jamaah</span></p>
         </div>
       </div>
-      <button id="themeToggle" aria-label="Ganti tema" class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition">
+      <button id="themeToggle" aria-label="Ganti tema" class="p-2.5 rounded-xl text-white/90 hover:text-white hover:bg-white/10 ring-1 ring-white/15 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
         <i data-lucide="moon" class="w-5 h-5"></i>
       </button>
     </div>
 
-    <!-- MAIN BANNER SALDO KAS -->
-    <div class="max-w-7xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
-      <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 w-full sm:w-auto">
-        <div>
-          <p class="text-xs uppercase tracking-wider font-bold text-white/90 mb-1">Saldo Kas Yayasan</p>
-          <h2 id="totalSaldoKas" class="amt text-3xl sm:text-4xl font-extrabold tracking-tight">Rp 0</h2>
-          <p id="saldoPerTanggal" class="text-xs text-white/90 mt-1"></p>
+    <div class="max-w-7xl mx-auto grid gap-6 lg:gap-10 lg:grid-cols-[minmax(0,27rem)_1fr] items-end">
+      <!-- SALDO KAS: panel mihrab -->
+      <section class="mihrab bg-amber-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-center px-6 pt-12 sm:pt-14 pb-6" aria-labelledby="lblSaldoKas">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="w-5 h-5 text-amber-500 mx-auto mb-3"><path fill="currentColor" d="M12 1.6l3 3.3 4.4-.3-.3 4.4 3.3 3-3.3 3 .3 4.4-4.4-.3-3 3.3-3-3.3-4.4.3.3-4.4-3.3-3 3.3-3-.3-4.4 4.4.3z"/></svg>
+        <p id="lblSaldoKas" class="text-sm font-semibold text-cyan-700 dark:text-cyan-300">Saldo kas yayasan</p>
+        <h2 id="totalSaldoKas" class="amt angka text-4xl sm:text-5xl font-extrabold tracking-tight text-cyan-900 dark:text-white mt-1">Rp 0</h2>
+        <p id="saldoPerTanggal" class="text-xs text-slate-600 dark:text-slate-400 mt-2"></p>
+      </section>
+
+      <!-- SALDO ZAKAT + PERIODE -->
+      <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-6 sm:items-end lg:items-start xl:items-end justify-between lg:pb-2">
+        <div class="border-l-2 border-amber-400 pl-4">
+          <p class="text-sm font-semibold text-amber-300 flex items-center gap-1.5"><i data-lucide="hand-coins" class="w-4 h-4"></i> Saldo zakat</p>
+          <p id="totalSaldoZakat" class="amt angka text-3xl font-extrabold tracking-tight mt-0.5">Rp 0</p>
+          <p id="zakatMutasiBulan" class="text-xs text-white/75 mt-1"></p>
         </div>
-        <!-- Saldo Zakat dipisah dari kas operasional -->
-        <div class="pt-4 sm:pt-0 sm:pl-8 border-t sm:border-t-0 sm:border-l border-white/25">
-          <p class="text-xs uppercase tracking-wider font-bold text-amber-50 mb-1 flex items-center gap-1.5"><i data-lucide="hand-coins" class="w-3.5 h-3.5"></i> Saldo Zakat</p>
-          <h2 id="totalSaldoZakat" class="amt text-2xl sm:text-3xl font-extrabold tracking-tight">Rp 0</h2>
-          <p id="zakatMutasiBulan" class="text-xs text-white/90 mt-1"></p>
+        <div class="flex flex-col items-start sm:items-end lg:items-start xl:items-end gap-2">
+          <label class="flex items-center gap-3">
+            <span class="text-sm text-white/80">Periode</span>
+            <select id="monthSelect" class="bg-white/10 hover:bg-white/15 border border-amber-300/40 text-white font-semibold text-sm pl-3 pr-8 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300">
+              <option class="text-slate-800">Memuat...</option>
+            </select>
+          </label>
+          <p id="infoUpdate" class="text-xs text-white/70 flex items-center gap-1"></p>
         </div>
-      </div>
-      <div class="flex flex-col items-start sm:items-end gap-1.5">
-      <div class="flex items-center gap-3">
-        <label for="monthSelect" class="text-xs font-bold text-white/90">PERIODE</label>
-        <select id="monthSelect" class="bg-white/20 border border-white/30 text-white font-bold text-sm px-4 py-2 rounded-xl backdrop-blur-md focus:outline-none focus:bg-teal-700">
-          <option class="text-slate-800">Memuat...</option>
-        </select>
-      </div>
-      <p id="infoUpdate" class="text-[11px] text-white/90 flex items-center gap-1"></p>
       </div>
     </div>
 
     <!-- TAB NAVIGATION: 2x2 di HP, sejajar di layar besar -->
-    <nav class="max-w-7xl mx-auto mt-6 grid grid-cols-2 sm:flex gap-2 no-print">
+    <nav class="max-w-7xl mx-auto mt-8 grid grid-cols-2 sm:flex sm:gap-2 border-b border-white/15 no-print" aria-label="Bagian laporan">
       <button onclick="switchTab('dashboard')" id="btn-tab-dashboard">
-        <i data-lucide="layout-dashboard" class="w-4 h-4 shrink-0"></i> Dashboard
+        <i data-lucide="layout-dashboard" class="w-4 h-4 shrink-0"></i> Ringkasan
       </button>
       <button onclick="switchTab('transaksi')" id="btn-tab-transaksi">
         <i data-lucide="arrow-left-right" class="w-4 h-4 shrink-0"></i> Mutasi Kas
       </button>
       <button onclick="switchTab('laporan')" id="btn-tab-laporan">
-        <i data-lucide="file-text" class="w-4 h-4 shrink-0"></i> Laporan Akun
+        <i data-lucide="file-text" class="w-4 h-4 shrink-0"></i> Laporan Bulanan
       </button>
       <button onclick="switchTab('ustadz')" id="btn-tab-ustadz">
         <i data-lucide="users" class="w-4 h-4 shrink-0"></i> Rekening Ustadz
@@ -122,10 +140,10 @@
   </header>
 
   <!-- CONTENT SECTION -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-8 -mt-12 sm:-mt-14 space-y-6 pb-12 relative z-10">
+  <main class="max-w-7xl mx-auto px-4 sm:px-8 -mt-6 sm:-mt-8 space-y-6 pb-12 relative z-10">
 
     <!-- STATUS: loading / gagal muat -->
-    <div id="statusBanner" role="status" class="no-print flex items-center gap-3 p-4 rounded-2xl shadow-sm border bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 text-sm font-semibold text-slate-600 dark:text-slate-300">
+    <div id="statusBanner" role="status" class="no-print flex items-center gap-3 p-4 rounded-2xl border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-600 dark:text-slate-300">
       <i data-lucide="loader-circle" class="w-5 h-5 text-cyan-600 animate-spin shrink-0"></i>
       <span>Memuat data keuangan...</span>
     </div>
@@ -133,45 +151,31 @@
     <!-- VIEW 1: DASHBOARD -->
     <div id="view-dashboard" class="space-y-6">
 
-      <!-- KPI CARDS -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 block">Pemasukan Kas Bulan Ini</span>
-            <p id="kpiPemasukan" class="amt text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
-            <p id="kpiPemasukanCount" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
-          </div>
-          <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 rounded-2xl shrink-0"><i data-lucide="trending-up" class="w-6 h-6"></i></div>
+      <!-- KPI: satu panel bersekat -->
+      <section class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-700" aria-label="Ringkasan kas bulan ini">
+        <div class="p-5 sm:p-6">
+          <p class="text-sm font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-cyan-500"></span> Pemasukan kas</p>
+          <p id="kpiPemasukan" class="amt angka text-2xl sm:text-[1.7rem] font-bold text-slate-900 dark:text-white mt-1.5">Rp 0</p>
+          <p id="kpiPemasukanCount" class="text-xs text-slate-500 dark:text-slate-400 mt-1"></p>
         </div>
-
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-rose-600 block">Pengeluaran Kas Bulan Ini</span>
-            <p id="kpiPengeluaran" class="amt text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
-            <p id="kpiPengeluaranCount" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
-          </div>
-          <div class="p-3 bg-rose-50 dark:bg-rose-950/40 text-rose-600 rounded-2xl shrink-0"><i data-lucide="trending-down" class="w-6 h-6"></i></div>
+        <div class="p-5 sm:p-6">
+          <p class="text-sm font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-rose-700"></span> Pengeluaran kas</p>
+          <p id="kpiPengeluaran" class="amt angka text-2xl sm:text-[1.7rem] font-bold text-slate-900 dark:text-white mt-1.5">Rp 0</p>
+          <p id="kpiPengeluaranCount" class="text-xs text-slate-500 dark:text-slate-400 mt-1"></p>
         </div>
-
-        <!-- Ganti kartu "Saldo Kas Berjalan" (dobel dengan banner atas) jadi Surplus/Defisit -->
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-cyan-600 block">Surplus / Defisit Bulan Ini</span>
-            <p id="kpiSelisih" class="amt text-2xl font-bold text-cyan-600 mt-1">Rp 0</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Kas operasional, di luar zakat</p>
-          </div>
-          <div class="p-3 bg-cyan-50 dark:bg-cyan-950/40 text-cyan-600 rounded-2xl shrink-0"><i data-lucide="scale" class="w-6 h-6"></i></div>
+        <div class="p-5 sm:p-6 bg-slate-50/70 dark:bg-slate-900/30 sm:rounded-r-2xl">
+          <p class="text-sm font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2"><i data-lucide="scale" class="w-4 h-4 text-amber-500"></i> Surplus / defisit</p>
+          <p id="kpiSelisih" class="amt angka text-2xl sm:text-[1.7rem] font-bold text-cyan-600 mt-1.5">Rp 0</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Kas operasional, di luar zakat</p>
         </div>
-
-      </div>
+      </section>
 
       <!-- KARTU DONASI (muncul kalau DONASI diisi atau ada node rekening_yayasan di Firebase) -->
       <div id="kartuDonasi" class="hidden no-print"></div>
 
       <!-- CHART 1: DONUT -->
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <h3 class="font-kufi text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <i data-lucide="chart-pie" class="w-5 h-5 text-cyan-500 shrink-0"></i> Kas Dipakai Untuk Apa <span id="donutMonthTitle" class="whitespace-nowrap font-semibold text-slate-500 dark:text-slate-400"></span>
         </h3>
         <div class="relative h-64 sm:h-72">
@@ -181,8 +185,8 @@
       </div>
 
       <!-- CHART 2: BAR BULANAN -->
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <h3 class="font-kufi text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <i data-lucide="chart-column" class="w-5 h-5 text-emerald-500 shrink-0"></i> Tren Arus Kas & Saldo Bulanan <span id="trenYearTitle" class="whitespace-nowrap font-semibold text-slate-500 dark:text-slate-400"></span>
         </h3>
         <div class="relative h-64 sm:h-72">
@@ -194,8 +198,8 @@
 
     <!-- VIEW 2: MUTASI KAS -->
     <div id="view-transaksi" class="hidden space-y-4">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 sm:p-6">
-        <h3 class="text-lg font-bold mb-4">Mutasi Kas <span id="txMonthTitle" class="text-cyan-600"></span></h3>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+        <h3 class="font-kufi text-lg font-bold mb-4">Mutasi Kas <span id="txMonthTitle" class="text-cyan-600"></span></h3>
 
         <!-- Filter mutasi -->
         <div class="flex flex-col sm:flex-row gap-3 mb-4">
@@ -220,7 +224,7 @@
         <!-- Versi tabel untuk layar besar -->
         <div class="hidden sm:block overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 dark:bg-slate-700/50 uppercase text-xs font-semibold">
+            <thead class="bg-slate-50 dark:bg-slate-700/50  text-xs font-semibold">
               <tr>
                 <th class="p-3 whitespace-nowrap">Tanggal</th>
                 <th class="p-3">Akun</th>
@@ -238,15 +242,15 @@
 
     <!-- VIEW 3: LAPORAN AKUN -->
     <div id="view-laporan" class="hidden space-y-6">
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 kop-card">
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 kop-card">
 
         <!-- KOP SURAT -->
-        <div class="flex items-center gap-4 pb-4 border-b-4 border-double border-slate-800 dark:border-slate-300">
-          <div class="p-3 bg-gradient-to-br from-cyan-500 to-teal-500 text-white rounded-2xl shrink-0">
-            <i data-lucide="building-2" class="w-8 h-8 sm:w-10 sm:h-10"></i>
+        <div class="flex items-center gap-4 pb-4 border-b-4 border-double border-amber-500">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-cyan-900 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="w-8 h-8 sm:w-9 sm:h-9 text-amber-300"><path fill="currentColor" d="M12 1.6l3 3.3 4.4-.3-.3 4.4 3.3 3-3.3 3 .3 4.4-4.4-.3-3 3.3-3-3.3-4.4.3.3-4.4-3.3-3 3.3-3-.3-4.4 4.4.3z"/></svg>
           </div>
           <div class="flex-1 min-w-0 text-center sm:text-left">
-            <h2 id="kopNama" class="text-lg sm:text-2xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100 uppercase"></h2>
+            <h2 id="kopNama" class="font-kufi text-lg sm:text-2xl font-bold tracking-wide text-slate-800 dark:text-slate-100 uppercase"></h2>
             <p id="kopSub" class="text-xs sm:text-sm font-semibold text-cyan-700 dark:text-cyan-400"></p>
             <p id="kopAlamat" class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1"></p>
             <p id="kopKontak" class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400"></p>
@@ -256,7 +260,7 @@
         <!-- JUDUL LAPORAN -->
         <div class="pt-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
           <div>
-            <h3 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100">Laporan Keuangan Bulanan</h3>
+            <h3 class="font-kufi text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100">Laporan Keuangan Bulanan</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Periode: <span id="reportMonthTitle" class="font-bold text-cyan-600"></span></p>
           </div>
           <div class="flex gap-2 self-start sm:self-auto no-print">
@@ -280,15 +284,15 @@
       </div>
 
       <!-- REKAP PEMASUKAN -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 sm:p-6 space-y-4">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6 space-y-4">
         <div>
-          <h4 class="text-base font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+          <h4 class="font-kufi text-base font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
             <i data-lucide="trending-up" class="w-5 h-5"></i> Rekap Pemasukan
           </h4>
           <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 no-print">Klik baris kategori untuk buka/tutup rincian</p>
         </div>
         <table class="w-full text-left text-sm">
-          <thead class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 uppercase text-xs font-semibold">
+          <thead class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300  text-xs font-semibold">
             <tr>
               <th class="py-2.5 px-3">Kategori Akun</th>
               <th class="py-2.5 px-3 text-center">Jml</th>
@@ -307,15 +311,15 @@
       </div>
 
       <!-- REKAP PENGELUARAN -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 sm:p-6 space-y-4">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6 space-y-4">
         <div>
-          <h4 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2">
+          <h4 class="font-kufi text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2">
             <i data-lucide="trending-down" class="w-5 h-5"></i> Rekap Pengeluaran
           </h4>
           <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 no-print">Klik baris kategori untuk buka/tutup rincian</p>
         </div>
         <table class="w-full text-left text-sm">
-          <thead class="bg-rose-50 dark:bg-rose-950/30 text-rose-800 dark:text-rose-300 uppercase text-xs font-semibold">
+          <thead class="bg-rose-50 dark:bg-rose-950/30 text-rose-800 dark:text-rose-300  text-xs font-semibold">
             <tr>
               <th class="py-2.5 px-3">Kategori Akun</th>
               <th class="py-2.5 px-3 text-center">Jml</th>
@@ -334,7 +338,7 @@
 
         <!-- RINGKASAN SALDO -->
         <div class="pt-3 border-t border-slate-100 dark:border-slate-700">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Ringkasan Saldo Kas</h4>
+          <h4 class="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Ringkasan saldo kas</h4>
           <div class="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden text-xs sm:text-sm">
 
             <div class="p-3 flex justify-between items-center gap-2">
@@ -359,9 +363,9 @@
       </div>
 
       <!-- LAPORAN ZAKAT (terpisah dari kas operasional) -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-amber-200 dark:border-amber-900/60 p-4 sm:p-6 space-y-4">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-amber-200 dark:border-amber-900/60 p-4 sm:p-6 space-y-4">
         <div>
-          <h4 class="text-base font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
+          <h4 class="font-kufi text-base font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
             <i data-lucide="hand-coins" class="w-5 h-5"></i> Laporan Dana Zakat
           </h4>
           <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">Dana zakat dicatat terpisah dan tidak masuk ke Saldo Kas Yayasan</p>
@@ -373,7 +377,7 @@
           </div>
         </div>
         <table class="w-full text-left text-sm">
-          <thead class="bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 uppercase text-xs font-semibold">
+          <thead class="bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300  text-xs font-semibold">
             <tr>
               <th class="py-2.5 px-3">Tanggal</th>
               <th class="py-2.5 px-3">Keterangan</th>
@@ -407,8 +411,8 @@
 
     <!-- VIEW 4: REKENING USTADZ -->
     <div id="view-ustadz" class="hidden space-y-4">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 sm:p-6">
-        <h3 class="text-lg font-bold mb-4">Rekening Ustadz & Pengajar</h3>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+        <h3 class="font-kufi text-lg font-bold mb-4">Rekening Ustadz & Pengajar</h3>
         <div id="ustadzCards" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
       </div>
     </div>
@@ -561,11 +565,11 @@
     const tampilkanStatus = (jenis, pesan) => {
       if (!jenis) { statusBanner.classList.add('hidden'); return; }
       const gaya = {
-        loading: ['loader-circle', 'text-cyan-600 animate-spin', 'border-slate-100 dark:border-slate-700'],
+        loading: ['loader-circle', 'text-cyan-600 animate-spin', 'border-slate-200 dark:border-slate-700'],
         lambat: ['wifi-off', 'text-amber-500', 'border-amber-200 dark:border-amber-900'],
         error: ['triangle-alert', 'text-rose-600', 'border-rose-200 dark:border-rose-900']
       }[jenis];
-      statusBanner.className = `no-print flex items-center gap-3 p-4 rounded-2xl shadow-sm border bg-white dark:bg-slate-800 ${gaya[2]} text-sm font-semibold text-slate-600 dark:text-slate-300`;
+      statusBanner.className = `no-print flex items-center gap-3 p-4 rounded-2xl border bg-white dark:bg-slate-800 ${gaya[2]} text-sm font-semibold text-slate-600 dark:text-slate-300`;
       statusBanner.innerHTML = `<i data-lucide="${gaya[0]}" class="w-5 h-5 ${gaya[1]} shrink-0"></i><span>${pesan}</span>`;
       lucide.createIcons();
     };
@@ -620,9 +624,9 @@
     });
 
     // ==== TAB ====
-    const TAB_BASE = 'px-3 sm:px-5 py-2.5 text-sm rounded-xl transition flex items-center justify-center gap-2 whitespace-nowrap';
-    const TAB_ON = TAB_BASE + ' bg-white text-cyan-700 font-bold shadow-md';
-    const TAB_OFF = TAB_BASE + ' bg-white/10 hover:bg-white/20 text-white font-semibold backdrop-blur-md';
+    const TAB_BASE = 'px-3 sm:px-4 py-3 text-sm transition flex items-center justify-center gap-2 whitespace-nowrap -mb-px border-b-[3px] focus:outline-none focus-visible:bg-white/10';
+    const TAB_ON = TAB_BASE + ' border-amber-300 text-amber-200 font-bold';
+    const TAB_OFF = TAB_BASE + ' border-transparent text-white/75 hover:text-white font-semibold';
 
     window.switchTab = function(tabName) {
       if (!TABS.includes(tabName)) tabName = 'dashboard';
@@ -654,7 +658,7 @@
     // ==== FILTER MUTASI ====
     let mutasiBulanIni = [];
     let filterJenis = 'semua';
-    const CHIP_ON = 'px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition bg-cyan-600 text-white';
+    const CHIP_ON = 'px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition bg-cyan-800 text-white ring-1 ring-cyan-800';
     const CHIP_OFF = 'px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600';
     const setChip = () => document.querySelectorAll('#filterChips button').forEach(b => {
       b.className = b.dataset.filter === filterJenis ? CHIP_ON : CHIP_OFF;
@@ -758,7 +762,7 @@
 
       const kpiSelisih = document.getElementById('kpiSelisih');
       kpiSelisih.innerText = formatRp(selisih);
-      kpiSelisih.className = `text-2xl font-bold mt-1 ${selisih >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
+      kpiSelisih.className = `amt angka text-2xl sm:text-[1.7rem] font-bold mt-1.5 ${selisih >= 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-rose-600 dark:text-rose-300'}`;
 
       document.getElementById('donutMonthTitle').innerText = `· ${namaBulan}`;
       document.getElementById('txMonthTitle').innerText = namaBulan;
@@ -848,16 +852,16 @@
       const pesanWA = encodeURIComponent(`Assalamu'alaikum, saya ingin konfirmasi donasi untuk ${KOP.nama}.\nNama: \nNominal: \nPeruntukan (infak/zakat): `);
       el.className = 'no-print';
       el.innerHTML = `
-        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-5 sm:p-6 rounded-2xl shadow-md flex flex-col sm:flex-row gap-5 sm:items-center">
+        <div class="pola text-white p-5 sm:p-6 rounded-2xl ring-1 ring-amber-400/30 flex flex-col sm:flex-row gap-5 sm:items-center">
           <div class="flex-1 min-w-0">
-            <p class="text-xs font-bold uppercase tracking-wider text-white/90 flex items-center gap-1.5"><i data-lucide="heart-handshake" class="w-4 h-4"></i> Salurkan Donasi</p>
+            <p class="font-kufi text-lg font-semibold text-amber-200 flex items-center gap-2"><i data-lucide="heart-handshake" class="w-5 h-5"></i> Salurkan donasi</p>
             <p class="text-sm text-white/90 mt-1">Infak, sedekah, dan zakat bisa ditransfer ke rekening yayasan:</p>
-            <div class="mt-3 bg-white/15 rounded-xl p-3 flex items-center justify-between gap-3">
+            <div class="mt-3 bg-white/10 ring-1 ring-white/10 rounded-xl p-3 flex items-center justify-between gap-3">
               <div class="min-w-0">
                 <p class="text-xs font-semibold text-white/90">${esc(d.bank)}${d.atas_nama ? ' · a.n. ' + esc(d.atas_nama) : ''}</p>
                 <p class="text-lg sm:text-xl font-extrabold font-mono tracking-wide">${esc(d.no_rekening)}</p>
               </div>
-              <button type="button" onclick="salinRek(this)" data-rek="${esc(d.no_rekening)}" class="flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-bold bg-white text-emerald-700 hover:bg-emerald-50 transition shrink-0">
+              <button type="button" onclick="salinRek(this)" data-rek="${esc(d.no_rekening)}" class="flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-bold bg-amber-300 text-cyan-950 hover:bg-amber-200 transition shrink-0">
                 <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin
               </button>
             </div>
@@ -970,6 +974,7 @@
 
     // ==== CHART ====
     Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+    Chart.defaults.font.size = 12;
 
     // Teks di tengah donut
     const centerText = {
@@ -990,11 +995,11 @@
     };
 
     let catChart, monChart;
-    const PALET = ['#0891b2', '#f43f5e', '#f59e0b', '#8b5cf6', '#10b981', '#3b82f6', '#ec4899', '#64748b'];
+    const PALET = ['#1B6553', '#BF922B', '#9F3A2E', '#4E9A83', '#7F5D1E', '#5E7066', '#DFBD62', '#B2C1B8'];
     function renderCharts(rekap, txKas) {
       const dark = document.documentElement.classList.contains('dark');
-      const textColor = dark ? '#cbd5e1' : '#475569';
-      const gridColor = dark ? 'rgba(148,163,184,0.15)' : 'rgba(148,163,184,0.25)';
+      const textColor = dark ? '#D3DDD7' : '#4A5A51';
+      const gridColor = dark ? 'rgba(178,193,184,0.14)' : 'rgba(94,112,102,0.16)';
 
       // Donut: komposisi pengeluaran kas per kategori akun
       const perAkun = {};
@@ -1018,7 +1023,7 @@
             data: urut.map(x => x[1]),
             backgroundColor: urut.map((_, i) => PALET[i % PALET.length]),
             borderWidth: 2,
-            borderColor: dark ? '#1e293b' : '#ffffff'
+            borderColor: dark ? '#22312A' : '#ffffff'
           }]
         },
         options: {
@@ -1031,7 +1036,7 @@
             centerText: {
               label: totalKeluar ? 'Total Keluar' : '',
               value: totalKeluar ? 'Rp ' + formatRpPendek(totalKeluar) : '',
-              color: dark ? '#f1f5f9' : '#1e293b',
+              color: dark ? '#F4F7F5' : '#0E362E',
               subColor: textColor
             }
           }
@@ -1049,9 +1054,9 @@
           labels: months.map(formatBulanPendek),
           datasets: [
             { type: 'line', label: 'Saldo Kas', data: months.map(m => (rekap[m].saldo_akhir || 0) - saldoZakatSampai(m)),
-              borderColor: '#0891b2', backgroundColor: '#0891b2', borderWidth: 2.5, tension: 0.3, pointRadius: 3, yAxisID: 'y1', order: 0 },
-            { label: 'Pemasukan', data: months.map(m => (rekap[m].total_debit || 0) - zakatBulan(m).masuk), backgroundColor: '#10b981', borderRadius: 6, order: 1 },
-            { label: 'Pengeluaran', data: months.map(m => (rekap[m].total_kredit || 0) - zakatBulan(m).keluar), backgroundColor: '#f43f5e', borderRadius: 6, order: 1 }
+              borderColor: '#BF922B', backgroundColor: '#BF922B', borderWidth: 2.5, tension: 0.3, pointRadius: 3, yAxisID: 'y1', order: 0 },
+            { label: 'Pemasukan', data: months.map(m => (rekap[m].total_debit || 0) - zakatBulan(m).masuk), backgroundColor: '#2C7D67', borderRadius: 4, order: 1 },
+            { label: 'Pengeluaran', data: months.map(m => (rekap[m].total_kredit || 0) - zakatBulan(m).keluar), backgroundColor: '#C2614F', borderRadius: 4, order: 1 }
           ]
         },
         options: {
@@ -1061,7 +1066,7 @@
           scales: {
             x: { grid: { display: false }, ticks: { color: textColor, maxRotation: 0, autoSkip: false } },
             y: { grid: { color: gridColor }, ticks: { color: textColor, callback: (v) => formatRpPendek(v) }, title: { display: true, text: 'Arus kas', color: textColor } },
-            y1: { position: 'right', grid: { display: false }, ticks: { color: '#0891b2', callback: (v) => formatRpPendek(v) }, title: { display: true, text: 'Saldo', color: '#0891b2' } }
+            y1: { position: 'right', grid: { display: false }, ticks: { color: '#A27822', callback: (v) => formatRpPendek(v) }, title: { display: true, text: 'Saldo', color: '#A27822' } }
           },
           plugins: {
             legend: { position: 'bottom', labels: { color: textColor, usePointStyle: true, padding: 16 } },
