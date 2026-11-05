@@ -55,10 +55,18 @@
 
     <!-- MAIN BANNER SALDO KAS -->
     <div class="max-w-7xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
-      <div>
-        <p class="text-xs uppercase tracking-wider font-bold text-cyan-100 mb-1">Total Saldo Kas Yayasan</p>
-        <h2 id="totalSaldoKas" class="text-3xl sm:text-4xl font-extrabold tracking-tight">Rp 0</h2>
-        <p id="saldoPerTanggal" class="text-xs text-cyan-100 mt-1"></p>
+      <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 w-full sm:w-auto">
+        <div>
+          <p class="text-xs uppercase tracking-wider font-bold text-cyan-100 mb-1">Saldo Kas Yayasan</p>
+          <h2 id="totalSaldoKas" class="text-3xl sm:text-4xl font-extrabold tracking-tight">Rp 0</h2>
+          <p id="saldoPerTanggal" class="text-xs text-cyan-100 mt-1"></p>
+        </div>
+        <!-- Saldo Zakat dipisah dari kas operasional -->
+        <div class="pt-4 sm:pt-0 sm:pl-8 border-t sm:border-t-0 sm:border-l border-white/25">
+          <p class="text-xs uppercase tracking-wider font-bold text-amber-100 mb-1 flex items-center gap-1.5"><i data-lucide="hand-coins" class="w-3.5 h-3.5"></i> Saldo Zakat</p>
+          <h2 id="totalSaldoZakat" class="text-2xl sm:text-3xl font-extrabold tracking-tight">Rp 0</h2>
+          <p id="zakatMutasiBulan" class="text-xs text-cyan-100 mt-1"></p>
+        </div>
       </div>
       <div class="flex items-center gap-3">
         <label for="monthSelect" class="text-xs font-bold text-cyan-100">PERIODE</label>
@@ -96,7 +104,7 @@
 
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 block">Pemasukan Bulan Ini</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 block">Pemasukan Kas Bulan Ini</span>
             <p id="kpiPemasukan" class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
             <p id="kpiPemasukanCount" class="text-xs text-slate-400 mt-0.5"></p>
           </div>
@@ -105,7 +113,7 @@
 
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-rose-600 block">Pengeluaran Bulan Ini</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-rose-600 block">Pengeluaran Kas Bulan Ini</span>
             <p id="kpiPengeluaran" class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
             <p id="kpiPengeluaranCount" class="text-xs text-slate-400 mt-0.5"></p>
           </div>
@@ -117,7 +125,7 @@
           <div>
             <span class="text-xs font-bold uppercase tracking-wider text-cyan-600 block">Surplus / Defisit Bulan Ini</span>
             <p id="kpiSelisih" class="text-2xl font-bold text-cyan-600 mt-1">Rp 0</p>
-            <p class="text-xs text-slate-400 mt-0.5">Pemasukan dikurangi pengeluaran</p>
+            <p class="text-xs text-slate-400 mt-0.5">Kas operasional, di luar zakat</p>
           </div>
           <div class="p-3 bg-cyan-50 dark:bg-cyan-950/40 text-cyan-600 rounded-2xl shrink-0"><i data-lucide="scale" class="w-6 h-6"></i></div>
         </div>
@@ -205,7 +213,7 @@
         <div class="mt-4 p-3 bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-700 rounded-xl flex justify-between items-center gap-2 text-xs sm:text-sm">
           <div class="flex items-center gap-2 min-w-0">
             <i data-lucide="landmark" class="w-4 h-4 text-slate-500 shrink-0"></i>
-            <span class="font-semibold text-slate-700 dark:text-slate-200">Saldo Awal <span id="saldoAwalLabel" class="font-normal text-slate-400"></span></span>
+            <span class="font-semibold text-slate-700 dark:text-slate-200">Saldo Awal Kas <span id="saldoAwalLabel" class="font-normal text-slate-400"></span></span>
           </div>
           <span id="saldoAwal" class="text-sm sm:text-base font-extrabold text-slate-800 dark:text-slate-100 shrink-0 text-right whitespace-nowrap">Rp 0</span>
         </div>
@@ -287,6 +295,44 @@
           </div>
           <p class="text-[11px] text-slate-400 mt-2">Saldo Awal + Surplus / Defisit = Sisa Saldo</p>
           <p id="tglCetak" class="hidden print-only text-[11px] text-slate-400 mt-4 text-right"></p>
+        </div>
+      </div>
+
+      <!-- LAPORAN ZAKAT (terpisah dari kas operasional) -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-amber-200 dark:border-amber-900/60 p-4 sm:p-6 space-y-4">
+        <div>
+          <h4 class="text-base font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
+            <i data-lucide="hand-coins" class="w-5 h-5"></i> Laporan Dana Zakat
+          </h4>
+          <p class="text-[11px] text-slate-400 font-medium mt-0.5">Dana zakat dicatat terpisah dan tidak masuk ke Saldo Kas Yayasan</p>
+        </div>
+        <div class="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden text-xs sm:text-sm">
+          <div class="p-3 flex justify-between items-center gap-2 bg-slate-50 dark:bg-slate-700/40">
+            <span class="font-semibold text-slate-700 dark:text-slate-200">Saldo Awal Zakat <span id="zakatAwalLabel" class="font-normal text-slate-400"></span></span>
+            <span id="zakatAwal" class="font-extrabold text-slate-800 dark:text-slate-100 whitespace-nowrap">Rp 0</span>
+          </div>
+        </div>
+        <table class="w-full text-left text-sm">
+          <thead class="bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 uppercase text-xs font-semibold">
+            <tr>
+              <th class="py-2.5 px-3">Tanggal</th>
+              <th class="py-2.5 px-3">Keterangan</th>
+              <th class="py-2.5 px-3 text-right">Masuk</th>
+              <th class="py-2.5 px-3 text-right">Keluar</th>
+            </tr>
+          </thead>
+          <tbody id="zakatBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+          <tfoot class="bg-slate-50 dark:bg-slate-700/50 font-bold text-slate-800 dark:text-slate-100 text-xs sm:text-sm">
+            <tr>
+              <td class="py-2.5 px-3" colspan="2">TOTAL BULAN INI</td>
+              <td id="zakatTotalMasuk" class="py-2.5 px-3 text-right text-emerald-600 whitespace-nowrap">Rp 0</td>
+              <td id="zakatTotalKeluar" class="py-2.5 px-3 text-right text-rose-600 whitespace-nowrap">Rp 0</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="p-3 rounded-xl flex justify-between items-center gap-2 bg-amber-50/80 dark:bg-amber-950/40 border-2 border-amber-200 dark:border-amber-900 text-xs sm:text-sm">
+          <span class="font-extrabold text-amber-900 dark:text-amber-200 flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4 text-amber-600 shrink-0"></i> Sisa Saldo Zakat <span id="zakatAkhirLabel" class="font-medium text-amber-700/70 dark:text-amber-300/70"></span></span>
+          <span id="zakatAkhir" class="text-sm sm:text-lg font-extrabold text-amber-600 whitespace-nowrap">Rp 0</span>
         </div>
       </div>
     </div>
@@ -389,6 +435,23 @@
       return s;
     };
 
+    // ==== ZAKAT (dana terpisah) ====
+    // Semua akun yang namanya mengandung kata "zakat" dihitung sebagai Saldo Zakat,
+    // tidak masuk ke Saldo Kas Yayasan.
+    const isZakat = (akun) => /zakat/i.test(String(akun || ''));
+    const txBulan = (ym) => {
+      const v = globalData?.transaksi?.[ym];
+      return v ? Object.values(v).filter(Boolean) : [];
+    };
+    // Mutasi zakat dalam satu bulan
+    const zakatBulan = (ym) => txBulan(ym).filter(t => isZakat(t.akun)).reduce((a, t) => {
+      a.masuk += t.debit || 0; a.keluar += t.kredit || 0; return a;
+    }, { masuk: 0, keluar: 0 });
+    // Saldo zakat kumulatif sampai akhir bulan ym
+    const saldoZakatSampai = (ym) => Object.keys(globalData?.transaksi || {})
+      .filter(m => m <= ym)
+      .reduce((tot, m) => { const z = zakatBulan(m); return tot + z.masuk - z.keluar; }, 0);
+
     // ==== TEMA ====
     const themeBtn = document.getElementById('themeToggle');
     themeBtn.addEventListener('click', () => {
@@ -452,15 +515,27 @@
       const currentRekap = rekap[selectedMonth] || { total_debit: 0, total_kredit: 0, saldo_akhir: 0 };
       const namaBulan = formatBulan(selectedMonth);
 
-      const txs = globalData.transaksi?.[selectedMonth] ? Object.values(globalData.transaksi[selectedMonth]) : [];
-      const jmlMasuk = txs.filter(t => t.debit > 0).length;
-      const jmlKeluar = txs.filter(t => t.kredit > 0).length;
-      const selisih = (currentRekap.total_debit || 0) - (currentRekap.total_kredit || 0);
+      const txs = txBulan(selectedMonth);
+      const txKas = txs.filter(t => !isZakat(t.akun));
+      const jmlMasuk = txKas.filter(t => t.debit > 0).length;
+      const jmlKeluar = txKas.filter(t => t.kredit > 0).length;
 
-      document.getElementById('totalSaldoKas').innerText = formatRp(currentRekap.saldo_akhir);
+      // Pisahkan zakat dari kas operasional
+      const zNow = zakatBulan(selectedMonth);
+      const saldoZakat = saldoZakatSampai(selectedMonth);
+      const saldoKas = (currentRekap.saldo_akhir || 0) - saldoZakat;
+      const kasMasuk = (currentRekap.total_debit || 0) - zNow.masuk;
+      const kasKeluar = (currentRekap.total_kredit || 0) - zNow.keluar;
+      const selisih = kasMasuk - kasKeluar;
+
+      document.getElementById('totalSaldoKas').innerText = formatRp(saldoKas);
       document.getElementById('saldoPerTanggal').innerText = `Posisi akhir ${namaBulan}`;
-      document.getElementById('kpiPemasukan').innerText = formatRp(currentRekap.total_debit);
-      document.getElementById('kpiPengeluaran').innerText = formatRp(currentRekap.total_kredit);
+      document.getElementById('totalSaldoZakat').innerText = formatRp(saldoZakat);
+      document.getElementById('zakatMutasiBulan').innerText = (zNow.masuk || zNow.keluar)
+        ? `${namaBulan}: +${formatRpPendek(zNow.masuk)} / −${formatRpPendek(zNow.keluar)}`
+        : `Tidak ada mutasi zakat ${namaBulan}`;
+      document.getElementById('kpiPemasukan').innerText = formatRp(kasMasuk);
+      document.getElementById('kpiPengeluaran').innerText = formatRp(kasKeluar);
       document.getElementById('kpiPemasukanCount').innerText = `${jmlMasuk} transaksi`;
       document.getElementById('kpiPengeluaranCount').innerText = `${jmlKeluar} transaksi`;
 
@@ -477,7 +552,7 @@
       document.getElementById('txTableBody').innerHTML = txs.length ? txs.map(t => `
         <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
           <td class="p-3 font-medium whitespace-nowrap">${esc(formatTanggal(t.tanggal))}</td>
-          <td class="p-3"><span class="px-2 py-1 bg-cyan-100 text-cyan-800 rounded-md text-xs font-semibold whitespace-nowrap">${esc(t.akun)}</span></td>
+          <td class="p-3"><span class="px-2 py-1 ${isZakat(t.akun) ? 'bg-amber-100 text-amber-800' : 'bg-cyan-100 text-cyan-800'} rounded-md text-xs font-semibold whitespace-nowrap">${esc(t.akun)}</span></td>
           <td class="p-3">${esc(rapikanKeterangan(t.keterangan))}</td>
           <td class="p-3 text-right text-emerald-600 font-semibold whitespace-nowrap">${t.debit > 0 ? formatRp(t.debit) : '-'}</td>
           <td class="p-3 text-right text-rose-600 font-semibold whitespace-nowrap">${t.kredit > 0 ? formatRp(t.kredit) : '-'}</td>
@@ -493,7 +568,7 @@
           <div class="min-w-0">
             <div class="flex items-center gap-2 text-xs text-slate-400">
               <span class="font-semibold">${esc(formatTanggal(t.tanggal))}</span>
-              <span class="px-1.5 py-0.5 bg-cyan-100 text-cyan-800 rounded font-semibold whitespace-nowrap">${esc(t.akun)}</span>
+              <span class="px-1.5 py-0.5 ${isZakat(t.akun) ? 'bg-amber-100 text-amber-800' : 'bg-cyan-100 text-cyan-800'} rounded font-semibold whitespace-nowrap">${esc(t.akun)}</span>
             </div>
             <p class="text-sm font-medium mt-1">${esc(rapikanKeterangan(t.keterangan))}</p>
           </div>
@@ -504,7 +579,8 @@
         </div>`;
       }).join('') : `<p class="py-6 text-center text-slate-400 text-sm">Belum ada mutasi di periode ini.</p>`;
 
-      renderReportCategoryTables(txs, currentRekap.saldo_akhir);
+      renderReportCategoryTables(txKas, saldoKas);
+      renderZakatReport(txs.filter(t => isZakat(t.akun)), saldoZakat, zNow);
 
       // Rekening Ustadz
       const ustadzList = globalData.rekening_ustadz ? Object.values(globalData.rekening_ustadz) : [];
@@ -516,7 +592,27 @@
         </div>
       `).join('');
 
-      renderCharts(rekap, currentRekap);
+      renderCharts(rekap, { total_debit: kasMasuk, total_kredit: kasKeluar });
+    }
+
+    function renderZakatReport(zTxs, saldoAkhir, zNow) {
+      const [thn, bln] = String(selectedMonth).split('-').map(Number);
+      const blnPendek = BULAN_PENDEK[bln - 1] || '';
+      const hariTerakhir = new Date(thn, bln, 0).getDate();
+      document.getElementById('zakatAwal').innerText = formatRp(saldoAkhir - zNow.masuk + zNow.keluar);
+      document.getElementById('zakatAwalLabel').innerText = `(per 1 ${blnPendek} ${thn})`;
+      document.getElementById('zakatAkhir').innerText = formatRp(saldoAkhir);
+      document.getElementById('zakatAkhirLabel').innerText = `(per ${hariTerakhir} ${blnPendek} ${thn})`;
+      document.getElementById('zakatTotalMasuk').innerText = formatRp(zNow.masuk);
+      document.getElementById('zakatTotalKeluar').innerText = formatRp(zNow.keluar);
+      document.getElementById('zakatBody').innerHTML = zTxs.length ? zTxs.map(t => `
+        <tr class="text-xs sm:text-sm">
+          <td class="py-2 px-3 whitespace-nowrap font-medium text-slate-500 dark:text-slate-400">${esc(formatTanggal(t.tanggal))}</td>
+          <td class="py-2 px-3">${esc(rapikanKeterangan(t.keterangan))}</td>
+          <td class="py-2 px-3 text-right text-emerald-600 font-semibold whitespace-nowrap">${t.debit > 0 ? formatRp(t.debit) : '-'}</td>
+          <td class="py-2 px-3 text-right text-rose-600 font-semibold whitespace-nowrap">${t.kredit > 0 ? formatRp(t.kredit) : '-'}</td>
+        </tr>`).join('')
+        : `<tr><td colspan="4" class="p-4 text-center text-slate-400 text-xs">Tidak ada mutasi zakat pada periode ini.</td></tr>`;
     }
 
     // Satu fungsi untuk dua tabel rekap (pemasukan & pengeluaran)
@@ -671,8 +767,8 @@
         data: {
           labels: months.map(formatBulanPendek),
           datasets: [
-            { label: 'Pemasukan', data: months.map(m => rekap[m].total_debit), backgroundColor: '#10b981', borderRadius: 6 },
-            { label: 'Pengeluaran', data: months.map(m => rekap[m].total_kredit), backgroundColor: '#f43f5e', borderRadius: 6 }
+            { label: 'Pemasukan', data: months.map(m => (rekap[m].total_debit || 0) - zakatBulan(m).masuk), backgroundColor: '#10b981', borderRadius: 6 },
+            { label: 'Pengeluaran', data: months.map(m => (rekap[m].total_kredit || 0) - zakatBulan(m).keluar), backgroundColor: '#f43f5e', borderRadius: 6 }
           ]
         },
         options: {
