@@ -4,6 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RuangDakwah - Laporan Keuangan Yayasan</title>
+  <meta name="description" content="Laporan keuangan terbuka Yayasan RuangDakwah: saldo kas, dana zakat, mutasi, dan laporan bulanan yang bisa dicek siapa saja.">
+  <meta name="theme-color" content="#06b6d4">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="RuangDakwah">
+  <meta property="og:title" content="Laporan Keuangan Yayasan RuangDakwah">
+  <meta property="og:description" content="Saldo kas, dana zakat, dan mutasi bulanan yayasan. Transparan dan bisa dicek kapan saja.">
+  <meta property="og:url" content="https://kajiansunnah.vercel.app/">
+  <meta property="og:image" content="https://kajiansunnah.vercel.app/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2306b6d4'/%3E%3Cpath d='M18 48V26l14-10 14 10v22H36V36h-8v12z' fill='white'/%3E%3C/svg%3E">
+  <script>
+    // Tema: pakai pilihan terakhir, kalau belum pernah pilih ikut setting HP/laptop
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('tema'); } catch (e) {}
+      if (t === 'dark' || (!t && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,10 +43,13 @@
   </script>
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@1.69.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    /* Skeleton saat data belum masuk, biar nggak keliatan "Rp 0" */
+    .is-loading .amt { color: transparent !important; background: rgba(148,163,184,.35); border-radius: .5rem; animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: .45; } }
     @media print {
       header, .no-print { display: none !important; }
       main { margin-top: 0 !important; }
@@ -34,7 +59,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
+<body class="is-loading bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
 
   <!-- HEADER BRANDING -->
   <header class="bg-gradient-to-r from-cyan-500 to-teal-500 text-white pt-6 pb-24 px-4 sm:px-8 rounded-b-[2rem] shadow-lg relative">
@@ -45,7 +70,7 @@
         </div>
         <div>
           <h1 class="text-xl sm:text-2xl font-bold tracking-tight">RuangDakwah</h1>
-          <p class="text-xs sm:text-sm text-cyan-100 font-medium">Laporan Keuangan & Mutasi Yayasan</p>
+          <p class="text-xs sm:text-sm text-white/90 font-medium">Laporan Keuangan & Mutasi Yayasan</p>
         </div>
       </div>
       <button id="themeToggle" aria-label="Ganti tema" class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition">
@@ -57,22 +82,25 @@
     <div class="max-w-7xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
       <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 w-full sm:w-auto">
         <div>
-          <p class="text-xs uppercase tracking-wider font-bold text-cyan-100 mb-1">Saldo Kas Yayasan</p>
-          <h2 id="totalSaldoKas" class="text-3xl sm:text-4xl font-extrabold tracking-tight">Rp 0</h2>
-          <p id="saldoPerTanggal" class="text-xs text-cyan-100 mt-1"></p>
+          <p class="text-xs uppercase tracking-wider font-bold text-white/90 mb-1">Saldo Kas Yayasan</p>
+          <h2 id="totalSaldoKas" class="amt text-3xl sm:text-4xl font-extrabold tracking-tight">Rp 0</h2>
+          <p id="saldoPerTanggal" class="text-xs text-white/90 mt-1"></p>
         </div>
         <!-- Saldo Zakat dipisah dari kas operasional -->
         <div class="pt-4 sm:pt-0 sm:pl-8 border-t sm:border-t-0 sm:border-l border-white/25">
-          <p class="text-xs uppercase tracking-wider font-bold text-amber-100 mb-1 flex items-center gap-1.5"><i data-lucide="hand-coins" class="w-3.5 h-3.5"></i> Saldo Zakat</p>
-          <h2 id="totalSaldoZakat" class="text-2xl sm:text-3xl font-extrabold tracking-tight">Rp 0</h2>
-          <p id="zakatMutasiBulan" class="text-xs text-cyan-100 mt-1"></p>
+          <p class="text-xs uppercase tracking-wider font-bold text-amber-50 mb-1 flex items-center gap-1.5"><i data-lucide="hand-coins" class="w-3.5 h-3.5"></i> Saldo Zakat</p>
+          <h2 id="totalSaldoZakat" class="amt text-2xl sm:text-3xl font-extrabold tracking-tight">Rp 0</h2>
+          <p id="zakatMutasiBulan" class="text-xs text-white/90 mt-1"></p>
         </div>
       </div>
+      <div class="flex flex-col items-start sm:items-end gap-1.5">
       <div class="flex items-center gap-3">
-        <label for="monthSelect" class="text-xs font-bold text-cyan-100">PERIODE</label>
+        <label for="monthSelect" class="text-xs font-bold text-white/90">PERIODE</label>
         <select id="monthSelect" class="bg-white/20 border border-white/30 text-white font-bold text-sm px-4 py-2 rounded-xl backdrop-blur-md focus:outline-none focus:bg-teal-700">
           <option class="text-slate-800">Memuat...</option>
         </select>
+      </div>
+      <p id="infoUpdate" class="text-[11px] text-white/90 flex items-center gap-1"></p>
       </div>
     </div>
 
@@ -96,6 +124,12 @@
   <!-- CONTENT SECTION -->
   <main class="max-w-7xl mx-auto px-4 sm:px-8 -mt-12 sm:-mt-14 space-y-6 pb-12 relative z-10">
 
+    <!-- STATUS: loading / gagal muat -->
+    <div id="statusBanner" role="status" class="no-print flex items-center gap-3 p-4 rounded-2xl shadow-sm border bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 text-sm font-semibold text-slate-600 dark:text-slate-300">
+      <i data-lucide="loader-circle" class="w-5 h-5 text-cyan-600 animate-spin shrink-0"></i>
+      <span>Memuat data keuangan...</span>
+    </div>
+
     <!-- VIEW 1: DASHBOARD -->
     <div id="view-dashboard" class="space-y-6">
 
@@ -105,8 +139,8 @@
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div>
             <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 block">Pemasukan Kas Bulan Ini</span>
-            <p id="kpiPemasukan" class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
-            <p id="kpiPemasukanCount" class="text-xs text-slate-400 mt-0.5"></p>
+            <p id="kpiPemasukan" class="amt text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
+            <p id="kpiPemasukanCount" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
           </div>
           <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 rounded-2xl shrink-0"><i data-lucide="trending-up" class="w-6 h-6"></i></div>
         </div>
@@ -114,8 +148,8 @@
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div>
             <span class="text-xs font-bold uppercase tracking-wider text-rose-600 block">Pengeluaran Kas Bulan Ini</span>
-            <p id="kpiPengeluaran" class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
-            <p id="kpiPengeluaranCount" class="text-xs text-slate-400 mt-0.5"></p>
+            <p id="kpiPengeluaran" class="amt text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">Rp 0</p>
+            <p id="kpiPengeluaranCount" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
           </div>
           <div class="p-3 bg-rose-50 dark:bg-rose-950/40 text-rose-600 rounded-2xl shrink-0"><i data-lucide="trending-down" class="w-6 h-6"></i></div>
         </div>
@@ -124,28 +158,32 @@
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div>
             <span class="text-xs font-bold uppercase tracking-wider text-cyan-600 block">Surplus / Defisit Bulan Ini</span>
-            <p id="kpiSelisih" class="text-2xl font-bold text-cyan-600 mt-1">Rp 0</p>
-            <p class="text-xs text-slate-400 mt-0.5">Kas operasional, di luar zakat</p>
+            <p id="kpiSelisih" class="amt text-2xl font-bold text-cyan-600 mt-1">Rp 0</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Kas operasional, di luar zakat</p>
           </div>
           <div class="p-3 bg-cyan-50 dark:bg-cyan-950/40 text-cyan-600 rounded-2xl shrink-0"><i data-lucide="scale" class="w-6 h-6"></i></div>
         </div>
 
       </div>
 
+      <!-- KARTU DONASI (muncul kalau DONASI diisi atau ada node rekening_yayasan di Firebase) -->
+      <div id="kartuDonasi" class="hidden no-print"></div>
+
       <!-- CHART 1: DONUT -->
       <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
-          <i data-lucide="pie-chart" class="w-5 h-5 text-cyan-500 shrink-0"></i> Pemasukan vs Pengeluaran <span id="donutMonthTitle" class="font-semibold text-slate-400"></span>
+        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <i data-lucide="chart-pie" class="w-5 h-5 text-cyan-500 shrink-0"></i> Kas Dipakai Untuk Apa <span id="donutMonthTitle" class="whitespace-nowrap font-semibold text-slate-500 dark:text-slate-400"></span>
         </h3>
         <div class="relative h-64 sm:h-72">
           <canvas id="categoryChart"></canvas>
+          <p id="donutKosong" class="hidden absolute inset-0 flex items-center justify-center text-sm text-slate-500 dark:text-slate-400">Belum ada pengeluaran kas di periode ini.</p>
         </div>
       </div>
 
       <!-- CHART 2: BAR BULANAN -->
       <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
-          <i data-lucide="bar-chart-2" class="w-5 h-5 text-emerald-500 shrink-0"></i> Tren Arus Kas Bulanan <span id="trenYearTitle" class="font-semibold text-slate-400"></span>
+        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <i data-lucide="chart-column" class="w-5 h-5 text-emerald-500 shrink-0"></i> Tren Arus Kas & Saldo Bulanan <span id="trenYearTitle" class="whitespace-nowrap font-semibold text-slate-500 dark:text-slate-400"></span>
         </h3>
         <div class="relative h-64 sm:h-72">
           <canvas id="monthlyChart"></canvas>
@@ -158,6 +196,23 @@
     <div id="view-transaksi" class="hidden space-y-4">
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 sm:p-6">
         <h3 class="text-lg font-bold mb-4">Mutasi Kas <span id="txMonthTitle" class="text-cyan-600"></span></h3>
+
+        <!-- Filter mutasi -->
+        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+          <div id="filterChips" class="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filter jenis mutasi">
+            <button type="button" data-filter="semua">Semua</button>
+            <button type="button" data-filter="masuk">Masuk</button>
+            <button type="button" data-filter="keluar">Keluar</button>
+            <button type="button" data-filter="zakat">Zakat</button>
+          </div>
+          <label class="relative sm:ml-auto sm:w-64">
+            <span class="sr-only">Cari keterangan</span>
+            <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input id="cariMutasi" type="search" placeholder="Cari keterangan atau akun..."
+              class="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+          </label>
+        </div>
+        <p id="mutasiInfo" class="text-xs text-slate-500 dark:text-slate-400 mb-2"></p>
 
         <!-- Versi kartu untuk HP -->
         <div id="txCards" class="sm:hidden divide-y divide-slate-100 dark:divide-slate-700"></div>
@@ -202,18 +257,23 @@
         <div class="pt-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
           <div>
             <h3 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100">Laporan Keuangan Bulanan</h3>
-            <p class="text-xs text-slate-400 mt-1">Periode: <span id="reportMonthTitle" class="font-bold text-cyan-600"></span></p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Periode: <span id="reportMonthTitle" class="font-bold text-cyan-600"></span></p>
           </div>
-          <button onclick="window.print()" class="self-start sm:self-auto px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-2 whitespace-nowrap no-print">
+          <div class="flex gap-2 self-start sm:self-auto no-print">
+          <button onclick="bagikanLaporan()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-2 whitespace-nowrap">
+            <i data-lucide="share-2" class="w-4 h-4"></i> Bagikan
+          </button>
+          <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-2 whitespace-nowrap no-print">
             <i data-lucide="printer" class="w-4 h-4"></i> Cetak Laporan
           </button>
+          </div>
         </div>
 
         <!-- SALDO AWAL -->
         <div class="mt-4 p-3 bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-700 rounded-xl flex justify-between items-center gap-2 text-xs sm:text-sm">
           <div class="flex items-center gap-2 min-w-0">
             <i data-lucide="landmark" class="w-4 h-4 text-slate-500 shrink-0"></i>
-            <span class="font-semibold text-slate-700 dark:text-slate-200">Saldo Awal Kas <span id="saldoAwalLabel" class="font-normal text-slate-400"></span></span>
+            <span class="font-semibold text-slate-700 dark:text-slate-200">Saldo Awal Kas <span id="saldoAwalLabel" class="font-normal text-slate-500 dark:text-slate-400"></span></span>
           </div>
           <span id="saldoAwal" class="text-sm sm:text-base font-extrabold text-slate-800 dark:text-slate-100 shrink-0 text-right whitespace-nowrap">Rp 0</span>
         </div>
@@ -225,7 +285,7 @@
           <h4 class="text-base font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
             <i data-lucide="trending-up" class="w-5 h-5"></i> Rekap Pemasukan
           </h4>
-          <p class="text-[11px] text-slate-400 font-medium mt-0.5 no-print">Klik baris kategori untuk buka/tutup rincian</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 no-print">Klik baris kategori untuk buka/tutup rincian</p>
         </div>
         <table class="w-full text-left text-sm">
           <thead class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 uppercase text-xs font-semibold">
@@ -252,7 +312,7 @@
           <h4 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2">
             <i data-lucide="trending-down" class="w-5 h-5"></i> Rekap Pengeluaran
           </h4>
-          <p class="text-[11px] text-slate-400 font-medium mt-0.5 no-print">Klik baris kategori untuk buka/tutup rincian</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 no-print">Klik baris kategori untuk buka/tutup rincian</p>
         </div>
         <table class="w-full text-left text-sm">
           <thead class="bg-rose-50 dark:bg-rose-950/30 text-rose-800 dark:text-rose-300 uppercase text-xs font-semibold">
@@ -293,8 +353,8 @@
               <span id="totalEndingBalance" class="text-sm sm:text-lg font-extrabold text-cyan-600 shrink-0 text-right whitespace-nowrap">Rp 0</span>
             </div>
           </div>
-          <p class="text-[11px] text-slate-400 mt-2">Saldo Awal + Surplus / Defisit = Sisa Saldo</p>
-          <p id="tglCetak" class="hidden print-only text-[11px] text-slate-400 mt-4 text-right"></p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">Saldo Awal + Surplus / Defisit = Sisa Saldo</p>
+          <p id="tglCetak" class="hidden print-only text-[11px] text-slate-500 dark:text-slate-400 mt-4 text-right"></p>
         </div>
       </div>
 
@@ -304,11 +364,11 @@
           <h4 class="text-base font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
             <i data-lucide="hand-coins" class="w-5 h-5"></i> Laporan Dana Zakat
           </h4>
-          <p class="text-[11px] text-slate-400 font-medium mt-0.5">Dana zakat dicatat terpisah dan tidak masuk ke Saldo Kas Yayasan</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">Dana zakat dicatat terpisah dan tidak masuk ke Saldo Kas Yayasan</p>
         </div>
         <div class="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden text-xs sm:text-sm">
           <div class="p-3 flex justify-between items-center gap-2 bg-slate-50 dark:bg-slate-700/40">
-            <span class="font-semibold text-slate-700 dark:text-slate-200">Saldo Awal Zakat <span id="zakatAwalLabel" class="font-normal text-slate-400"></span></span>
+            <span class="font-semibold text-slate-700 dark:text-slate-200">Saldo Awal Zakat <span id="zakatAwalLabel" class="font-normal text-slate-500 dark:text-slate-400"></span></span>
             <span id="zakatAwal" class="font-extrabold text-slate-800 dark:text-slate-100 whitespace-nowrap">Rp 0</span>
           </div>
         </div>
@@ -335,6 +395,14 @@
           <span id="zakatAkhir" class="text-sm sm:text-lg font-extrabold text-amber-600 whitespace-nowrap">Rp 0</span>
         </div>
       </div>
+
+      <!-- TANDA TANGAN (hanya muncul saat dicetak) -->
+      <div id="blokTTD" class="hidden print-only pt-6">
+        <div class="grid grid-cols-2 gap-8 text-center text-sm text-slate-800">
+          <div><p id="ttdJabatanKiri" class="font-semibold"></p><div class="h-20"></div><p id="ttdNamaKiri" class="font-bold border-t border-slate-400 pt-1 mx-6"></p></div>
+          <div><p id="ttdJabatanKanan" class="font-semibold"></p><div class="h-20"></div><p id="ttdNamaKanan" class="font-bold border-t border-slate-400 pt-1 mx-6"></p></div>
+        </div>
+      </div>
     </div>
 
     <!-- VIEW 4: REKENING USTADZ -->
@@ -346,6 +414,9 @@
     </div>
 
   </main>
+
+  <!-- TOAST -->
+  <div id="toast" role="status" aria-live="polite" class="no-print fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-50"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -373,6 +444,30 @@
       kontak: ''
     };
 
+    // ==== REKENING DONASI YAYASAN (isi biar kartu "Salurkan Donasi" muncul di dashboard) ====
+    // Bisa juga diisi lewat Firebase di node yayasan_ruang_dakwah/rekening_yayasan dengan field yang sama.
+    const DONASI = {
+      bank: '',          // contoh: 'BSI'
+      no_rekening: '',   // contoh: '7123456789'
+      atas_nama: '',     // contoh: 'Yayasan RuangDakwah'
+      whatsapp: '',      // nomor konfirmasi, format 62..., contoh: '6281234567890'
+      qris_url: ''       // link gambar QRIS (opsional)
+    };
+
+    // ==== NAMA PENANDATANGAN LAPORAN (muncul saat dicetak) ====
+    const TTD = { kiri: { jabatan: 'Bendahara', nama: '' }, kanan: { jabatan: 'Ketua Yayasan', nama: '' } };
+
+    let globalData = null;
+    // Bulan & tab bisa dibuka langsung dari link, contoh: ?bulan=2026-10#laporan
+    const TABS = ['dashboard', 'transaksi', 'laporan', 'ustadz'];
+    const urlParams = new URLSearchParams(location.search);
+    let selectedMonth = /^\d{4}-\d{2}$/.test(urlParams.get('bulan') || '') ? urlParams.get('bulan') : null;
+    let currentTab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'dashboard';
+    const simpanURL = () => {
+      const q = selectedMonth ? `?bulan=${selectedMonth}` : '';
+      try { history.replaceState(null, '', `${location.pathname}${q}#${currentTab}`); } catch (e) {}
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
@@ -382,6 +477,10 @@
     document.getElementById('kopSub').innerText = KOP.sub;
     document.getElementById('kopAlamat').innerText = KOP.alamat;
     document.getElementById('kopKontak').innerText = KOP.kontak;
+    document.getElementById('ttdJabatanKiri').innerText = TTD.kiri.jabatan;
+    document.getElementById('ttdNamaKiri').textContent = TTD.kiri.nama || '\u00a0';
+    document.getElementById('ttdJabatanKanan').innerText = TTD.kanan.jabatan;
+    document.getElementById('ttdNamaKanan').textContent = TTD.kanan.nama || '\u00a0';
 
     // ==== HELPER FORMAT ====
     const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -441,7 +540,12 @@
     const isZakat = (akun) => /zakat/i.test(String(akun || ''));
     const txBulan = (ym) => {
       const v = globalData?.transaksi?.[ym];
-      return v ? Object.values(v).filter(Boolean) : [];
+      if (!v) return [];
+      // Urutkan berdasarkan tanggal. Tanggal sama tetap ikut urutan asli dari database.
+      return Object.values(v).filter(Boolean)
+        .map((t, i) => ({ t, i }))
+        .sort((a, b) => String(a.t.tanggal).localeCompare(String(b.t.tanggal)) || a.i - b.i)
+        .map(x => x.t);
     };
     // Mutasi zakat dalam satu bulan
     const zakatBulan = (ym) => txBulan(ym).filter(t => isZakat(t.akun)).reduce((a, t) => {
@@ -452,13 +556,67 @@
       .filter(m => m <= ym)
       .reduce((tot, m) => { const z = zakatBulan(m); return tot + z.masuk - z.keluar; }, 0);
 
+    // ==== STATUS & TOAST ====
+    const statusBanner = document.getElementById('statusBanner');
+    const tampilkanStatus = (jenis, pesan) => {
+      if (!jenis) { statusBanner.classList.add('hidden'); return; }
+      const gaya = {
+        loading: ['loader-circle', 'text-cyan-600 animate-spin', 'border-slate-100 dark:border-slate-700'],
+        lambat: ['wifi-off', 'text-amber-500', 'border-amber-200 dark:border-amber-900'],
+        error: ['triangle-alert', 'text-rose-600', 'border-rose-200 dark:border-rose-900']
+      }[jenis];
+      statusBanner.className = `no-print flex items-center gap-3 p-4 rounded-2xl shadow-sm border bg-white dark:bg-slate-800 ${gaya[2]} text-sm font-semibold text-slate-600 dark:text-slate-300`;
+      statusBanner.innerHTML = `<i data-lucide="${gaya[0]}" class="w-5 h-5 ${gaya[1]} shrink-0"></i><span>${pesan}</span>`;
+      lucide.createIcons();
+    };
+    let toastTimer;
+    const toast = (pesan) => {
+      const el = document.getElementById('toast');
+      el.innerText = pesan;
+      el.classList.remove('opacity-0');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.add('opacity-0'), 1800);
+    };
+    window.salinRek = async (btn) => {
+      const teks = btn.dataset.rek || '';
+      try {
+        await navigator.clipboard.writeText(teks);
+      } catch {
+        const ta = Object.assign(document.createElement('textarea'), { value: teks });
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+      }
+      toast(`Nomor rekening ${teks} tersalin`);
+    };
+    // "Diperbarui": pakai field timestamp kalau ada di database, kalau nggak pakai tanggal transaksi terakhir
+    const tampilkanInfoUpdate = () => {
+      const el = document.getElementById('infoUpdate');
+      const ts = globalData.terakhir_update || globalData.updated_at || globalData.last_update;
+      if (ts) {
+        const d = new Date(ts);
+        el.innerHTML = `<i data-lucide="refresh-cw" class="w-3 h-3"></i> Diperbarui ${isNaN(d) ? esc(ts) : d.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
+      } else {
+        const semua = Object.keys(globalData.transaksi || {}).flatMap(m => txBulan(m).map(t => String(t.tanggal)));
+        const terakhir = semua.sort().pop();
+        if (!terakhir) { el.innerHTML = ''; return; }
+        const [y, m, d] = terakhir.split('-');
+        el.innerHTML = `<i data-lucide="refresh-cw" class="w-3 h-3"></i> Transaksi terakhir tercatat ${parseInt(d, 10)} ${BULAN[parseInt(m, 10) - 1] || ''} ${y}`;
+      }
+    };
+
     // ==== TEMA ====
     const themeBtn = document.getElementById('themeToggle');
+    const setIkonTema = () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      themeBtn.innerHTML = `<i data-lucide="${isDark ? 'sun' : 'moon'}" class="w-5 h-5"></i>`;
+      themeBtn.setAttribute('aria-label', isDark ? 'Ganti ke tema terang' : 'Ganti ke tema gelap');
+      lucide.createIcons();
+    };
+    setIkonTema();
     themeBtn.addEventListener('click', () => {
       const isDark = document.documentElement.classList.toggle('dark');
-      themeBtn.innerHTML = `<i data-lucide="${isDark ? 'sun' : 'moon'}" class="w-5 h-5"></i>`;
-      lucide.createIcons();
-      if (globalData) renderCharts(globalData.rekap_bulanan || {}, (globalData.rekap_bulanan || {})[selectedMonth] || {});
+      try { localStorage.setItem('tema', isDark ? 'dark' : 'light'); } catch (e) {}
+      setIkonTema();
+      if (globalData) updateUI();
     });
 
     // ==== TAB ====
@@ -467,12 +625,46 @@
     const TAB_OFF = TAB_BASE + ' bg-white/10 hover:bg-white/20 text-white font-semibold backdrop-blur-md';
 
     window.switchTab = function(tabName) {
-      ['dashboard', 'transaksi', 'laporan', 'ustadz'].forEach(t => {
+      if (!TABS.includes(tabName)) tabName = 'dashboard';
+      currentTab = tabName;
+      TABS.forEach(t => {
         document.getElementById(`view-${t}`).classList.toggle('hidden', t !== tabName);
-        document.getElementById(`btn-tab-${t}`).className = t === tabName ? TAB_ON : TAB_OFF;
+        const btn = document.getElementById(`btn-tab-${t}`);
+        btn.className = t === tabName ? TAB_ON : TAB_OFF;
+        btn.setAttribute('aria-pressed', t === tabName ? 'true' : 'false');
       });
+      simpanURL();
     };
-    switchTab('dashboard');
+    switchTab(currentTab);
+    window.addEventListener('hashchange', () => {
+      const t = location.hash.slice(1);
+      if (TABS.includes(t) && t !== currentTab) switchTab(t);
+    });
+
+    window.bagikanLaporan = async () => {
+      const url = `${location.origin}${location.pathname}?bulan=${selectedMonth}#laporan`;
+      const judul = `Laporan Keuangan ${KOP.nama} ${formatBulan(selectedMonth)}`;
+      try {
+        if (navigator.share) { await navigator.share({ title: judul, url }); return; }
+      } catch (e) { if (e.name === 'AbortError') return; }
+      try { await navigator.clipboard.writeText(url); toast('Link laporan tersalin'); }
+      catch { prompt('Salin link laporan ini:', url); }
+    };
+
+    // ==== FILTER MUTASI ====
+    let mutasiBulanIni = [];
+    let filterJenis = 'semua';
+    const CHIP_ON = 'px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition bg-cyan-600 text-white';
+    const CHIP_OFF = 'px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600';
+    const setChip = () => document.querySelectorAll('#filterChips button').forEach(b => {
+      b.className = b.dataset.filter === filterJenis ? CHIP_ON : CHIP_OFF;
+      b.setAttribute('aria-pressed', b.dataset.filter === filterJenis ? 'true' : 'false');
+    });
+    document.querySelectorAll('#filterChips button').forEach(b => b.addEventListener('click', () => {
+      filterJenis = b.dataset.filter; setChip(); renderMutasi();
+    }));
+    document.getElementById('cariMutasi').addEventListener('input', () => renderMutasi());
+    setChip();
 
     window.toggleCategoryDetail = function(categoryId) {
       const detailRow = document.getElementById(categoryId);
@@ -484,13 +676,18 @@
     };
 
     // ==== DATA ====
-    let globalData = null;
-    let selectedMonth = null;
 
     const yayasanRef = ref(db, 'yayasan_ruang_dakwah');
+    const timerLambat = setTimeout(() => {
+      if (!globalData) tampilkanStatus('lambat', 'Data belum termuat. Koneksi mungkin lambat, tunggu sebentar atau coba refresh.');
+    }, 12000);
     onValue(yayasanRef, (snapshot) => {
       globalData = snapshot.val();
-      if (!globalData) return;
+      clearTimeout(timerLambat);
+      if (!globalData) { tampilkanStatus('error', 'Data laporan belum tersedia. Hubungi pengurus yayasan.'); return; }
+      tampilkanStatus(null);
+      document.body.classList.remove('is-loading');
+      tampilkanInfoUpdate();
 
       const months = Object.keys(globalData.rekap_bulanan || {}).sort();
       // Default ke bulan terbaru, bukan hardcode
@@ -503,10 +700,17 @@
 
       mSelect.onchange = (e) => {
         selectedMonth = e.target.value;
+        simpanURL();
         updateUI();
       };
+      simpanURL();
+      renderDonasi();
 
       updateUI();
+    }, (err) => {
+      clearTimeout(timerLambat);
+      console.error(err);
+      tampilkanStatus('error', 'Gagal memuat data keuangan. Coba refresh halaman beberapa saat lagi.');
     });
 
     function updateUI() {
@@ -536,8 +740,21 @@
         : `Tidak ada mutasi zakat ${namaBulan}`;
       document.getElementById('kpiPemasukan').innerText = formatRp(kasMasuk);
       document.getElementById('kpiPengeluaran').innerText = formatRp(kasKeluar);
-      document.getElementById('kpiPemasukanCount').innerText = `${jmlMasuk} transaksi`;
-      document.getElementById('kpiPengeluaranCount').innerText = `${jmlKeluar} transaksi`;
+      // Bandingkan dengan bulan sebelumnya (kas operasional saja)
+      const semuaBulan = Object.keys(rekap).sort();
+      const bulanLalu = semuaBulan[semuaBulan.indexOf(selectedMonth) - 1];
+      const banding = (now, prev, naikBagus) => {
+        if (!bulanLalu || !prev) return '';
+        const pct = Math.round((now - prev) / prev * 100);
+        if (pct === 0) return ` · sama dengan ${formatBulanPendek(bulanLalu)}`;
+        const bagus = (pct > 0) === naikBagus;
+        return ` · <span class="font-bold ${bagus ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${pct > 0 ? '▲' : '▼'} ${Math.abs(pct)}%</span> dari ${formatBulanPendek(bulanLalu)}`;
+      };
+      const zLalu = bulanLalu ? zakatBulan(bulanLalu) : { masuk: 0, keluar: 0 };
+      const masukLalu = bulanLalu ? (rekap[bulanLalu].total_debit || 0) - zLalu.masuk : 0;
+      const keluarLalu = bulanLalu ? (rekap[bulanLalu].total_kredit || 0) - zLalu.keluar : 0;
+      document.getElementById('kpiPemasukanCount').innerHTML = `${jmlMasuk} transaksi${banding(kasMasuk, masukLalu, true)}`;
+      document.getElementById('kpiPengeluaranCount').innerHTML = `${jmlKeluar} transaksi${banding(kasKeluar, keluarLalu, false)}`;
 
       const kpiSelisih = document.getElementById('kpiSelisih');
       kpiSelisih.innerText = formatRp(selisih);
@@ -548,36 +765,8 @@
       document.getElementById('reportMonthTitle').innerText = namaBulan;
       document.getElementById('trenYearTitle').innerText = `· ${String(selectedMonth).split('-')[0]}`;
 
-      // Mutasi: tabel (layar besar)
-      document.getElementById('txTableBody').innerHTML = txs.length ? txs.map(t => `
-        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
-          <td class="p-3 font-medium whitespace-nowrap">${esc(formatTanggal(t.tanggal))}</td>
-          <td class="p-3"><span class="px-2 py-1 ${isZakat(t.akun) ? 'bg-amber-100 text-amber-800' : 'bg-cyan-100 text-cyan-800'} rounded-md text-xs font-semibold whitespace-nowrap">${esc(t.akun)}</span></td>
-          <td class="p-3">${esc(rapikanKeterangan(t.keterangan))}</td>
-          <td class="p-3 text-right text-emerald-600 font-semibold whitespace-nowrap">${t.debit > 0 ? formatRp(t.debit) : '-'}</td>
-          <td class="p-3 text-right text-rose-600 font-semibold whitespace-nowrap">${t.kredit > 0 ? formatRp(t.kredit) : '-'}</td>
-          <td class="p-3 text-right font-bold whitespace-nowrap">${formatRp(t.saldo_setelah)}</td>
-        </tr>
-      `).join('') : `<tr><td colspan="6" class="p-6 text-center text-slate-400 text-sm">Belum ada mutasi di periode ini.</td></tr>`;
-
-      // Mutasi: kartu (HP)
-      document.getElementById('txCards').innerHTML = txs.length ? txs.map(t => {
-        const masuk = t.debit > 0;
-        return `
-        <div class="py-3 flex justify-between gap-3">
-          <div class="min-w-0">
-            <div class="flex items-center gap-2 text-xs text-slate-400">
-              <span class="font-semibold">${esc(formatTanggal(t.tanggal))}</span>
-              <span class="px-1.5 py-0.5 ${isZakat(t.akun) ? 'bg-amber-100 text-amber-800' : 'bg-cyan-100 text-cyan-800'} rounded font-semibold whitespace-nowrap">${esc(t.akun)}</span>
-            </div>
-            <p class="text-sm font-medium mt-1">${esc(rapikanKeterangan(t.keterangan))}</p>
-          </div>
-          <div class="text-right shrink-0">
-            <p class="text-sm font-bold ${masuk ? 'text-emerald-600' : 'text-rose-600'}">${masuk ? '+' : '−'} ${formatRp(masuk ? t.debit : t.kredit)}</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Saldo ${formatRp(t.saldo_setelah)}</p>
-          </div>
-        </div>`;
-      }).join('') : `<p class="py-6 text-center text-slate-400 text-sm">Belum ada mutasi di periode ini.</p>`;
+      mutasiBulanIni = txs;
+      renderMutasi();
 
       renderReportCategoryTables(txKas, saldoKas);
       renderZakatReport(txs.filter(t => isZakat(t.akun)), saldoZakat, zNow);
@@ -588,11 +777,95 @@
         <div class="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-700">
           <p class="font-bold">${esc(u.nama)}</p>
           <p class="text-xs text-cyan-600 font-semibold mt-1">${esc(u.bank)}</p>
-          <p class="text-sm font-mono mt-0.5">${esc(u.no_rekening)}</p>
+          <div class="flex items-center justify-between gap-2 mt-0.5">
+            <p class="text-sm font-mono">${esc(u.no_rekening)}</p>
+            <button type="button" onclick="salinRek(this)" data-rek="${esc(u.no_rekening)}" aria-label="Salin nomor rekening ${esc(u.nama)}"
+              class="no-print flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/50 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 transition shrink-0">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin
+            </button>
+          </div>
         </div>
       `).join('');
 
-      renderCharts(rekap, { total_debit: kasMasuk, total_kredit: kasKeluar });
+      renderCharts(rekap, txKas);
+      lucide.createIcons();
+    }
+
+
+    function renderMutasi() {
+      const q = document.getElementById('cariMutasi').value.trim().toLowerCase();
+      const list = mutasiBulanIni.filter(t => {
+        if (filterJenis === 'masuk' && !(t.debit > 0)) return false;
+        if (filterJenis === 'keluar' && !(t.kredit > 0)) return false;
+        if (filterJenis === 'zakat' && !isZakat(t.akun)) return false;
+        if (!q) return true;
+        return `${t.akun} ${t.keterangan} ${rapikanKeterangan(t.keterangan)}`.toLowerCase().includes(q);
+      });
+      const disaring = filterJenis !== 'semua' || q;
+      const kosong = disaring ? 'Tidak ada mutasi yang cocok dengan filter.' : 'Belum ada mutasi di periode ini.';
+      const masuk = list.reduce((a, t) => a + (t.debit || 0), 0);
+      const keluar = list.reduce((a, t) => a + (t.kredit || 0), 0);
+      document.getElementById('mutasiInfo').innerText = list.length
+        ? `${list.length} dari ${mutasiBulanIni.length} transaksi · Masuk ${formatRp(masuk)} · Keluar ${formatRp(keluar)}`
+        : '';
+
+      // Mutasi: tabel (layar besar)
+      document.getElementById('txTableBody').innerHTML = list.length ? list.map(t => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+          <td class="p-3 font-medium whitespace-nowrap">${esc(formatTanggal(t.tanggal))}</td>
+          <td class="p-3"><span class="px-2 py-1 ${isZakat(t.akun) ? 'bg-amber-100 text-amber-800' : 'bg-cyan-100 text-cyan-800'} rounded-md text-xs font-semibold whitespace-nowrap">${esc(t.akun)}</span></td>
+          <td class="p-3">${esc(rapikanKeterangan(t.keterangan))}</td>
+          <td class="p-3 text-right text-emerald-600 font-semibold whitespace-nowrap">${t.debit > 0 ? formatRp(t.debit) : '-'}</td>
+          <td class="p-3 text-right text-rose-600 font-semibold whitespace-nowrap">${t.kredit > 0 ? formatRp(t.kredit) : '-'}</td>
+          <td class="p-3 text-right font-bold whitespace-nowrap">${formatRp(t.saldo_setelah)}</td>
+        </tr>
+      `).join('') : `<tr><td colspan="6" class="p-6 text-center text-slate-500 dark:text-slate-400 text-sm">${kosong}</td></tr>`;
+
+      // Mutasi: kartu (HP)
+      document.getElementById('txCards').innerHTML = list.length ? list.map(t => {
+        const masuk = t.debit > 0;
+        return `
+        <div class="py-3 flex justify-between gap-3">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              <span class="font-semibold">${esc(formatTanggal(t.tanggal))}</span>
+              <span class="px-1.5 py-0.5 ${isZakat(t.akun) ? 'bg-amber-100 text-amber-800' : 'bg-cyan-100 text-cyan-800'} rounded font-semibold whitespace-nowrap">${esc(t.akun)}</span>
+            </div>
+            <p class="text-sm font-medium mt-1">${esc(rapikanKeterangan(t.keterangan))}</p>
+          </div>
+          <div class="text-right shrink-0">
+            <p class="text-sm font-bold ${masuk ? 'text-emerald-600' : 'text-rose-600'}">${masuk ? '+' : '−'} ${formatRp(masuk ? t.debit : t.kredit)}</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Saldo ${formatRp(t.saldo_setelah)}</p>
+          </div>
+        </div>`;
+      }).join('') : `<p class="py-6 text-center text-slate-500 dark:text-slate-400 text-sm">${kosong}</p>`;
+    }
+
+    function renderDonasi() {
+      const d = { ...DONASI, ...(globalData?.rekening_yayasan || {}) };
+      const el = document.getElementById('kartuDonasi');
+      if (!d.no_rekening) { el.classList.add('hidden'); return; }
+      const pesanWA = encodeURIComponent(`Assalamu'alaikum, saya ingin konfirmasi donasi untuk ${KOP.nama}.\nNama: \nNominal: \nPeruntukan (infak/zakat): `);
+      el.className = 'no-print';
+      el.innerHTML = `
+        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-5 sm:p-6 rounded-2xl shadow-md flex flex-col sm:flex-row gap-5 sm:items-center">
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-bold uppercase tracking-wider text-white/90 flex items-center gap-1.5"><i data-lucide="heart-handshake" class="w-4 h-4"></i> Salurkan Donasi</p>
+            <p class="text-sm text-white/90 mt-1">Infak, sedekah, dan zakat bisa ditransfer ke rekening yayasan:</p>
+            <div class="mt-3 bg-white/15 rounded-xl p-3 flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-xs font-semibold text-white/90">${esc(d.bank)}${d.atas_nama ? ' · a.n. ' + esc(d.atas_nama) : ''}</p>
+                <p class="text-lg sm:text-xl font-extrabold font-mono tracking-wide">${esc(d.no_rekening)}</p>
+              </div>
+              <button type="button" onclick="salinRek(this)" data-rek="${esc(d.no_rekening)}" class="flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-bold bg-white text-emerald-700 hover:bg-emerald-50 transition shrink-0">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin
+              </button>
+            </div>
+            ${d.whatsapp ? `<a href="https://wa.me/${esc(String(d.whatsapp).replace(/\D/g, ''))}?text=${pesanWA}" target="_blank" rel="noopener" class="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-sm font-bold transition"><i data-lucide="message-circle" class="w-4 h-4"></i> Konfirmasi via WhatsApp</a>` : ''}
+          </div>
+          ${d.qris_url ? `<img src="${esc(d.qris_url)}" alt="QRIS donasi ${esc(KOP.nama)}" class="w-36 h-36 sm:w-40 sm:h-40 object-contain bg-white rounded-xl p-2 self-center" loading="lazy">` : ''}
+        </div>`;
+      lucide.createIcons();
     }
 
     function renderZakatReport(zTxs, saldoAkhir, zNow) {
@@ -612,7 +885,7 @@
           <td class="py-2 px-3 text-right text-emerald-600 font-semibold whitespace-nowrap">${t.debit > 0 ? formatRp(t.debit) : '-'}</td>
           <td class="py-2 px-3 text-right text-rose-600 font-semibold whitespace-nowrap">${t.kredit > 0 ? formatRp(t.kredit) : '-'}</td>
         </tr>`).join('')
-        : `<tr><td colspan="4" class="p-4 text-center text-slate-400 text-xs">Tidak ada mutasi zakat pada periode ini.</td></tr>`;
+        : `<tr><td colspan="4" class="p-4 text-center text-slate-500 dark:text-slate-400 text-xs">Tidak ada mutasi zakat pada periode ini.</td></tr>`;
     }
 
     // Satu fungsi untuk dua tabel rekap (pemasukan & pengeluaran)
@@ -629,7 +902,7 @@
         `).join('');
 
         return `
-          <tr onclick="toggleCategoryDetail('${rowId}')" class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/40 transition select-none text-xs sm:text-sm">
+          <tr onclick="toggleCategoryDetail('${rowId}')" tabindex="0" role="button" aria-label="Buka rincian ${esc(akun)}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCategoryDetail('${rowId}')}" class="focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/40 transition select-none text-xs sm:text-sm">
             <td class="py-2.5 px-3 font-semibold text-slate-800 dark:text-slate-100">
               <span class="flex items-center gap-1.5">
                 <i data-lucide="chevron-down" id="icon-${rowId}" class="w-3.5 h-3.5 text-${color}-600 transition-transform duration-200 shrink-0"></i>
@@ -645,7 +918,7 @@
             </td>
           </tr>
         `;
-      }).join('') : `<tr><td colspan="3" class="p-4 text-center text-slate-400 text-xs">${emptyText}</td></tr>`;
+      }).join('') : `<tr><td colspan="3" class="p-4 text-center text-slate-500 dark:text-slate-400 text-xs">${emptyText}</td></tr>`;
     }
 
     function renderReportCategoryTables(txs, endingBalance) {
@@ -717,25 +990,33 @@
     };
 
     let catChart, monChart;
-    function renderCharts(rekap, currentRekap) {
+    const PALET = ['#0891b2', '#f43f5e', '#f59e0b', '#8b5cf6', '#10b981', '#3b82f6', '#ec4899', '#64748b'];
+    function renderCharts(rekap, txKas) {
       const dark = document.documentElement.classList.contains('dark');
       const textColor = dark ? '#cbd5e1' : '#475569';
       const gridColor = dark ? 'rgba(148,163,184,0.15)' : 'rgba(148,163,184,0.25)';
 
-      const totalDebit = currentRekap.total_debit || 0;
-      const totalKredit = currentRekap.total_kredit || 0;
-      const total = totalDebit + totalKredit;
-      const pct = (v) => total ? Math.round(v / total * 100) : 0;
-      const selisih = totalDebit - totalKredit;
+      // Donut: komposisi pengeluaran kas per kategori akun
+      const perAkun = {};
+      txKas.filter(t => t.kredit > 0).forEach(t => { perAkun[t.akun || 'Lainnya'] = (perAkun[t.akun || 'Lainnya'] || 0) + t.kredit; });
+      let urut = Object.entries(perAkun).sort((a, b) => b[1] - a[1]);
+      // Maksimal 7 kategori, sisanya digabung jadi "Lainnya"
+      if (urut.length > 7) {
+        const sisa = urut.slice(6).reduce((a, x) => a + x[1], 0);
+        urut = [...urut.slice(0, 6), ['Lainnya', sisa]];
+      }
+      const totalKeluar = urut.reduce((a, x) => a + x[1], 0);
+      document.getElementById('donutKosong').classList.toggle('hidden', totalKeluar > 0);
+      document.getElementById('donutKosong').classList.toggle('flex', totalKeluar === 0);
 
       if (catChart) catChart.destroy();
       catChart = new Chart(document.getElementById('categoryChart'), {
         type: 'doughnut',
         data: {
-          labels: [`Pemasukan (${pct(totalDebit)}%)`, `Pengeluaran (${pct(totalKredit)}%)`],
+          labels: urut.map(([k, v]) => `${k} (${Math.round(v / totalKeluar * 100)}%)`),
           datasets: [{
-            data: [totalDebit, totalKredit],
-            backgroundColor: ['#10b981', '#f43f5e'],
+            data: urut.map(x => x[1]),
+            backgroundColor: urut.map((_, i) => PALET[i % PALET.length]),
             borderWidth: 2,
             borderColor: dark ? '#1e293b' : '#ffffff'
           }]
@@ -745,12 +1026,12 @@
           maintainAspectRatio: false,
           cutout: '68%',
           plugins: {
-            legend: { position: 'bottom', labels: { color: textColor, usePointStyle: true, padding: 16 } },
+            legend: { display: totalKeluar > 0, position: 'bottom', labels: { color: textColor, usePointStyle: true, padding: 14 } },
             tooltip: { callbacks: { label: (c) => ' ' + formatRp(c.raw) } },
             centerText: {
-              label: 'Selisih',
-              value: (selisih < 0 ? '-' : '') + 'Rp ' + formatRpPendek(Math.abs(selisih)),
-              color: selisih >= 0 ? '#059669' : '#e11d48',
+              label: totalKeluar ? 'Total Keluar' : '',
+              value: totalKeluar ? 'Rp ' + formatRpPendek(totalKeluar) : '',
+              color: dark ? '#f1f5f9' : '#1e293b',
               subColor: textColor
             }
           }
@@ -758,7 +1039,7 @@
         plugins: [centerText]
       });
 
-      // Tren bulanan cuma nampilin bulan di tahun yang sama dengan periode terpilih
+      // Tren bulanan (tahun yang sama dengan periode terpilih) + garis saldo kas
       const tahun = String(selectedMonth).split('-')[0];
       const months = Object.keys(rekap).filter(m => m.startsWith(tahun)).sort();
       if (monChart) monChart.destroy();
@@ -767,16 +1048,20 @@
         data: {
           labels: months.map(formatBulanPendek),
           datasets: [
-            { label: 'Pemasukan', data: months.map(m => (rekap[m].total_debit || 0) - zakatBulan(m).masuk), backgroundColor: '#10b981', borderRadius: 6 },
-            { label: 'Pengeluaran', data: months.map(m => (rekap[m].total_kredit || 0) - zakatBulan(m).keluar), backgroundColor: '#f43f5e', borderRadius: 6 }
+            { type: 'line', label: 'Saldo Kas', data: months.map(m => (rekap[m].saldo_akhir || 0) - saldoZakatSampai(m)),
+              borderColor: '#0891b2', backgroundColor: '#0891b2', borderWidth: 2.5, tension: 0.3, pointRadius: 3, yAxisID: 'y1', order: 0 },
+            { label: 'Pemasukan', data: months.map(m => (rekap[m].total_debit || 0) - zakatBulan(m).masuk), backgroundColor: '#10b981', borderRadius: 6, order: 1 },
+            { label: 'Pengeluaran', data: months.map(m => (rekap[m].total_kredit || 0) - zakatBulan(m).keluar), backgroundColor: '#f43f5e', borderRadius: 6, order: 1 }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
           scales: {
             x: { grid: { display: false }, ticks: { color: textColor, maxRotation: 0, autoSkip: false } },
-            y: { grid: { color: gridColor }, ticks: { color: textColor, callback: (v) => formatRpPendek(v) } }
+            y: { grid: { color: gridColor }, ticks: { color: textColor, callback: (v) => formatRpPendek(v) }, title: { display: true, text: 'Arus kas', color: textColor } },
+            y1: { position: 'right', grid: { display: false }, ticks: { color: '#0891b2', callback: (v) => formatRpPendek(v) }, title: { display: true, text: 'Saldo', color: '#0891b2' } }
           },
           plugins: {
             legend: { position: 'bottom', labels: { color: textColor, usePointStyle: true, padding: 16 } },
