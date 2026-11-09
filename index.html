@@ -376,27 +376,57 @@
             <span id="zakatAwal" class="font-extrabold text-slate-800 dark:text-slate-100 whitespace-nowrap">Rp 0</span>
           </div>
         </div>
+        <!-- Di HP: 2 kolom (keterangan + jumlah). Di layar besar: 4 kolom. -->
         <table class="w-full text-left text-sm">
-          <thead class="bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300  text-xs font-semibold">
+          <thead class="bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-xs font-semibold">
             <tr>
-              <th class="py-2.5 px-3">Tanggal</th>
+              <th class="py-2.5 px-3 hidden sm:table-cell">Tanggal</th>
               <th class="py-2.5 px-3">Keterangan</th>
-              <th class="py-2.5 px-3 text-right">Masuk</th>
-              <th class="py-2.5 px-3 text-right">Keluar</th>
+              <th class="py-2.5 px-3 text-right hidden sm:table-cell">Masuk</th>
+              <th class="py-2.5 px-3 text-right hidden sm:table-cell">Keluar</th>
+              <th class="py-2.5 px-3 text-right sm:hidden">Jumlah</th>
             </tr>
           </thead>
           <tbody id="zakatBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
           <tfoot class="bg-slate-50 dark:bg-slate-700/50 font-bold text-slate-800 dark:text-slate-100 text-xs sm:text-sm">
-            <tr>
+            <tr class="hidden sm:table-row">
               <td class="py-2.5 px-3" colspan="2">TOTAL BULAN INI</td>
               <td id="zakatTotalMasuk" class="py-2.5 px-3 text-right text-emerald-600 whitespace-nowrap">Rp 0</td>
               <td id="zakatTotalKeluar" class="py-2.5 px-3 text-right text-rose-600 whitespace-nowrap">Rp 0</td>
             </tr>
+            <tr class="sm:hidden">
+              <td class="py-2.5 px-3">TOTAL MASUK</td>
+              <td id="zakatTotalMasukM" class="py-2.5 px-3 text-right text-emerald-600 whitespace-nowrap">Rp 0</td>
+            </tr>
+            <tr class="sm:hidden border-t border-slate-200 dark:border-slate-700">
+              <td class="py-2.5 px-3">TOTAL KELUAR</td>
+              <td id="zakatTotalKeluarM" class="py-2.5 px-3 text-right text-rose-600 whitespace-nowrap">Rp 0</td>
+            </tr>
           </tfoot>
         </table>
-        <div class="p-3 rounded-xl flex justify-between items-center gap-2 bg-amber-50/80 dark:bg-amber-950/40 border-2 border-amber-200 dark:border-amber-900 text-xs sm:text-sm">
-          <span class="font-extrabold text-amber-900 dark:text-amber-200 flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4 text-amber-600 shrink-0"></i> Sisa Saldo Zakat <span id="zakatAkhirLabel" class="font-medium text-amber-700/70 dark:text-amber-300/70"></span></span>
-          <span id="zakatAkhir" class="text-sm sm:text-lg font-extrabold text-amber-600 whitespace-nowrap">Rp 0</span>
+
+        <!-- Ringkasan saldo zakat: bentuknya sama dengan Ringkasan saldo kas -->
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-700">
+          <h4 class="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Ringkasan saldo zakat</h4>
+          <div class="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden text-xs sm:text-sm">
+
+            <div class="p-3 flex justify-between items-center gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="scale" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                <span class="font-semibold text-slate-700 dark:text-slate-200">Selisih Zakat Bulan Ini</span>
+              </div>
+              <span id="zakatSelisih" class="font-extrabold text-emerald-600 shrink-0 text-right whitespace-nowrap">Rp 0</span>
+            </div>
+
+            <div class="p-3 flex justify-between items-center gap-2 bg-amber-50/80 dark:bg-amber-950/40 border-t-2 border-amber-200 dark:border-amber-900">
+              <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="wallet" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                <span class="font-extrabold text-amber-900 dark:text-amber-200">Sisa Saldo Zakat <span id="zakatAkhirLabel" class="font-medium text-amber-700/70 dark:text-amber-300/70"></span></span>
+              </div>
+              <span id="zakatAkhir" class="text-sm sm:text-lg font-extrabold text-amber-600 shrink-0 text-right whitespace-nowrap">Rp 0</span>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">Saldo Awal Zakat + Selisih = Sisa Saldo Zakat</p>
         </div>
       </div>
 
@@ -882,14 +912,24 @@
       document.getElementById('zakatAkhirLabel').innerText = `(per ${hariTerakhir} ${blnPendek} ${thn})`;
       document.getElementById('zakatTotalMasuk').innerText = formatRp(zNow.masuk);
       document.getElementById('zakatTotalKeluar').innerText = formatRp(zNow.keluar);
+      document.getElementById('zakatTotalMasukM').innerText = formatRp(zNow.masuk);
+      document.getElementById('zakatTotalKeluarM').innerText = formatRp(zNow.keluar);
+      const zSel = zNow.masuk - zNow.keluar;
+      const elSel = document.getElementById('zakatSelisih');
+      elSel.innerText = (zSel < 0 ? '−' : '') + formatRp(Math.abs(zSel));
+      elSel.className = `font-extrabold shrink-0 text-right whitespace-nowrap ${zSel >= 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-rose-600 dark:text-rose-300'}`;
       document.getElementById('zakatBody').innerHTML = zTxs.length ? zTxs.map(t => `
-        <tr class="text-xs sm:text-sm">
-          <td class="py-2 px-3 whitespace-nowrap font-medium text-slate-500 dark:text-slate-400">${esc(formatTanggal(t.tanggal))}</td>
-          <td class="py-2 px-3">${esc(rapikanKeterangan(t.keterangan))}</td>
-          <td class="py-2 px-3 text-right text-emerald-600 font-semibold whitespace-nowrap">${t.debit > 0 ? formatRp(t.debit) : '-'}</td>
-          <td class="py-2 px-3 text-right text-rose-600 font-semibold whitespace-nowrap">${t.kredit > 0 ? formatRp(t.kredit) : '-'}</td>
+        <tr class="text-xs sm:text-sm align-top">
+          <td class="py-2 px-3 whitespace-nowrap font-medium text-slate-500 dark:text-slate-400 hidden sm:table-cell">${esc(formatTanggal(t.tanggal))}</td>
+          <td class="py-2 px-3">
+            <span class="block">${esc(rapikanKeterangan(t.keterangan))}</span>
+            <span class="block sm:hidden text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${esc(formatTanggal(t.tanggal))}</span>
+          </td>
+          <td class="py-2 px-3 text-right text-emerald-600 font-semibold whitespace-nowrap hidden sm:table-cell">${t.debit > 0 ? formatRp(t.debit) : '-'}</td>
+          <td class="py-2 px-3 text-right text-rose-600 font-semibold whitespace-nowrap hidden sm:table-cell">${t.kredit > 0 ? formatRp(t.kredit) : '-'}</td>
+          <td class="py-2 px-3 text-right font-semibold whitespace-nowrap sm:hidden ${t.debit > 0 ? 'text-emerald-600' : 'text-rose-600'}">${t.debit > 0 ? '+' + formatRp(t.debit) : '−' + formatRp(t.kredit)}</td>
         </tr>`).join('')
-        : `<tr><td colspan="4" class="p-4 text-center text-slate-500 dark:text-slate-400 text-xs">Tidak ada mutasi zakat pada periode ini.</td></tr>`;
+        : `<tr><td colspan="5" class="p-4 text-center text-slate-500 dark:text-slate-400 text-xs">Tidak ada mutasi zakat pada periode ini.</td></tr>`;
     }
 
     // Satu fungsi untuk dua tabel rekap (pemasukan & pengeluaran)
